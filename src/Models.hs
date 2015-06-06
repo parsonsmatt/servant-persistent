@@ -10,10 +10,7 @@
 
 module Models where
 
--- import           Control.Monad.IO.Class  (liftIO)
--- import           Control.Monad.Logger    (runStderrLoggingT)
 import           Control.Monad.Reader
--- import           Database.Persist
 import           Database.Persist.Postgresql
 import           Database.Persist.TH
 
