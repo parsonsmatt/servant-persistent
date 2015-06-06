@@ -35,28 +35,25 @@ lookupSetting env def = do
     p <- lookupEnv env
     return $ case p of Nothing -> def
                        Just a  -> read a
-
-data Person = Person
-    { name :: String
-    , email :: String
-    } deriving (Eq, Show, Generic)
-
-instance ToJSON Person
-
-userToPerson :: User -> Person
-userToPerson User{..} = Person { name = userName, email = userEmail }
-
-users :: [Person]
-users = [Person "Matt" "parsonsmatt@gmail.com", Person "What" "hello@example.com"]
-
 type PersonAPI = 
          "users" :> Get '[JSON] [Person]
     :<|> "users" :> Capture "name" String :> Get '[JSON] Person
 
+type AppM = ReaderT Config (EitherT ServantErr IO)
+
+app :: Config -> Application
+app cfg = serve userAPI (readerServer cfg)
+
+readerServer cfg = enter (readerToEither cfg) server
+
+readerToEither :: Config -> AppM :~> EitherT ServantErr IO
+readerToEither cfg = Nat $ \x -> runReaderT x cfg
+
+userAPI :: Proxy PersonAPI
+userAPI = Proxy
+
 server :: ServerT PersonAPI AppM
 server = allPersons :<|> singlePerson
-
-type AppM = ReaderT Config (EitherT ServantErr IO)
 
 allPersons :: AppM [Person]
 allPersons = do
@@ -72,13 +69,12 @@ singlePerson str = do
         [] -> lift $ left err404
         xs -> return $ head xs
 
-userAPI :: Proxy PersonAPI
-userAPI = Proxy
+data Person = Person
+    { name :: String
+    , email :: String
+    } deriving (Eq, Show, Generic)
 
-readerToEither :: Config -> AppM :~> EitherT ServantErr IO
-readerToEither cfg = Nat $ \x -> runReaderT x cfg
+instance ToJSON Person
 
-readerServer cfg = enter (readerToEither cfg) server
-
-app :: Config -> Application
-app cfg = serve userAPI (readerServer cfg)
+userToPerson :: User -> Person
+userToPerson User{..} = Person { name = userName, email = userEmail }
