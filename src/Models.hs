@@ -24,11 +24,6 @@ User
     name String
     email String
     deriving Show
-
-Friendship
-    user1Id UserId
-    user2Id UserId
-    UniqueFriendship user1Id user2Id
 |]
 
 doMigrations :: ReaderT SqlBackend IO ()
