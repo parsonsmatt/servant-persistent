@@ -19,9 +19,11 @@ source-repository head
         type:     git
         location: https://www.github.com/parsonsmatt/servant-persistent
 
-executable QuickLift
+executable perservant
   main-is:             Main.hs
-  -- other-modules:       
+  other-modules:       Config
+                     , Models
+                     , Api
   -- other-extensions:    
   build-depends:       base >=4.7 && <4.8
                      , servant >= 0.4 && < 0.5
