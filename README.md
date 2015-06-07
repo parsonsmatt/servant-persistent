@@ -15,6 +15,10 @@ For some reason, no one had created an example on how to use these guys together
 
 `main` starts off by pulling some settings from the environment, creating a connection pool, running the migrations, and finally running the app.
 
+## src/Api.hs
+
+This source contains the actual API definition.
+
 ## src/Config.hs
 
 Contains the `runDb`, `makePool`, and `Config` definitions.
