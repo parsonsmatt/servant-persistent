@@ -1,21 +1,16 @@
 {-# LANGUAGE DataKinds #-}
-{-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE TypeOperators #-}
 
 module Api where
 
-import Data.Aeson
-import Control.Monad.Reader
-import Control.Monad.Trans.Either
-import Network.Wai
-import GHC.Generics
-import Database.Persist.Postgresql
+import Control.Monad.Reader         (ReaderT, runReaderT, lift)
+import Control.Monad.Trans.Either   (EitherT, left)
+import Network.Wai                  (Application)
+import Database.Persist.Postgresql  (selectList, Entity(..), (==.))
 import Servant
-import Servant.API
 
-import Config
-import Models
+import Config                       (Config(..), runDb)
+import Models                    -- (Person, userToPerson, EntityField(UserName))
 
 type PersonAPI = 
          "users" :> Get '[JSON] [Person]
