@@ -7,11 +7,9 @@
 module Main where
 
 import Control.Monad.Trans.Either
-import Control.Monad.Identity
 import Data.Aeson
 import GHC.Generics
 import Network.Wai
-import Network.Wai.Middleware.RequestLogger
 import Network.Wai.Handler.Warp
 import Control.Monad.Reader
 import System.Environment (lookupEnv)
@@ -23,12 +21,13 @@ import Models
 
 main :: IO ()
 main = do
-    env <- lookupSetting "ENV" Development
+    env  <- lookupSetting "ENV" Development
     port <- lookupSetting "PORT" 8081
     pool <- makePool env
-    let cfg = Config { getPool = pool, getEnv = env }
+    let cfg = defaultConfig { getPool = pool, getEnv = env }
+        logger = setLogger env
     runSqlPool doMigrations pool
-    run port $ logStdoutDev $ app cfg
+    run port $ logger $ app cfg
 
 lookupSetting :: Read a => String -> a -> IO a
 lookupSetting env def = do

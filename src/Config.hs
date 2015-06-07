@@ -4,6 +4,8 @@
 module Config where
 
 import Control.Monad.Reader
+import Network.Wai.Middleware.RequestLogger
+import Network.Wai
 import Control.Monad.Logger
 
 import Database.Persist.Postgresql
@@ -16,8 +18,13 @@ data Config = Config
 defaultConfig :: Config
 defaultConfig = Config
     { getPool = undefined
-    , getEnv = Development
+    , getEnv  = Development
     }
+
+setLogger :: Environment -> Middleware
+setLogger Test = id
+setLogger Development = logStdoutDev
+setLogger Production = logStdout
 
 runDb query = do
     pool <- asks getPool
