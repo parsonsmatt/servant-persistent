@@ -6,6 +6,12 @@
 
 For some reason, no one had created an example on how to use these guys together. I put together this minimal example to show an example implementation, along with some resource management and basic error handling.
 
+A blog post going into more detail is available here: 
+
+## Requirements:
+
+You will need PostgreSQL installed and listening on port 5432. The default configuration uses a database name `perservant` with username/password test:test.
+
 ## The API:
 
 - `/users` returns a list of all users in the database
