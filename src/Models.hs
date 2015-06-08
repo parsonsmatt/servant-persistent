@@ -12,11 +12,13 @@
 
 module Models where
 
-import Data.Aeson
-import GHC.Generics
-import Control.Monad.Reader
-import Database.Persist.Postgresql
-import Database.Persist.TH
+import Data.Aeson                  (ToJSON, FromJSON)
+import GHC.Generics                (Generic)
+import Control.Monad.Reader        (ReaderT, asks, liftIO)
+import Database.Persist.Postgresql (SqlBackend(..), runMigration, 
+                                    runSqlPool)
+import Database.Persist.TH         (share, mkPersist, sqlSettings,
+                                    mkMigrate, persistLowerCase)
 
 import Config
 
@@ -30,12 +32,17 @@ User
 doMigrations :: ReaderT SqlBackend IO ()
 doMigrations = runMigration migrateAll
 
+runDb query = do
+    pool <- asks getPool
+    liftIO $ runSqlPool query pool
+
 data Person = Person
     { name :: String
     , email :: String
     } deriving (Eq, Show, Generic)
 
 instance ToJSON Person
+instance FromJSON Person
 
 userToPerson :: User -> Person
 userToPerson User{..} = Person { name = userName, email = userEmail }

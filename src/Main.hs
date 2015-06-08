@@ -1,17 +1,11 @@
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE TypeOperators #-}
-
 module Main where
 
-import Network.Wai
-import Network.Wai.Handler.Warp
-import System.Environment (lookupEnv)
-import Servant
-import Database.Persist.Postgresql
+import Network.Wai.Handler.Warp    (run)
+import System.Environment          (lookupEnv)
+import Database.Persist.Postgresql (runSqlPool)
 
-import Config (defaultConfig, setLogger, Environment(..), makePool, Config(..))
-import Api (app)
+import Config (defaultConfig, Config(..), Environment(..), setLogger, makePool)
+import Api    (app)
 import Models (doMigrations)
 
 

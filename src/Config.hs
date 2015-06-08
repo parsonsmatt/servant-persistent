@@ -1,19 +1,23 @@
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE FlexibleContexts #-}
 
 module Config where
 
-import Control.Monad.Reader
-import Network.Wai.Middleware.RequestLogger
-import Network.Wai
-import Control.Monad.Logger
+import Network.Wai.Middleware.RequestLogger (logStdoutDev, logStdout)
+import Network.Wai                          (Middleware)
+import Control.Monad.Logger                 (runNoLoggingT, runStdoutLoggingT)
 
-import Database.Persist.Postgresql
+import Database.Persist.Postgresql (ConnectionPool, createPostgresqlPool, ConnectionString)
 
 data Config = Config 
     { getPool :: ConnectionPool
-    , getEnv :: Environment
+    , getEnv  :: Environment
     }
+
+data Environment = 
+    Development
+  | Test
+  | Production
+  deriving (Eq, Show, Read)
 
 defaultConfig :: Config
 defaultConfig = Config
@@ -26,10 +30,6 @@ setLogger Test = id
 setLogger Development = logStdoutDev
 setLogger Production = logStdout
 
-runDb query = do
-    pool <- asks getPool
-    liftIO $ runSqlPool query pool
-
 makePool :: Environment -> IO ConnectionPool
 makePool Test = runNoLoggingT $ createPostgresqlPool (connStr Test) (envPool Test)
 makePool e = runStdoutLoggingT $ createPostgresqlPool (connStr e) (envPool e)
@@ -41,10 +41,3 @@ envPool Production = 8
 
 connStr :: Environment -> ConnectionString
 connStr _ = "host=localhost dbname=perservant user=test password=test port=5432"
-
-data Environment = 
-    Development
-  | Test
-  | Production
-  deriving (Eq, Show, Read)
-
