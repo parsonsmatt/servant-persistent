@@ -14,8 +14,9 @@ You will need PostgreSQL installed and listening on port 5432. The default confi
 
 ## The API:
 
-- `/users` returns a list of all users in the database
-- `/users/:name` returns the first user whose name is `:name`, and returns 404 if the user doesn't show up.
+- GET `/users` returns a list of all users in the database
+- GET `/users/:name` returns the first user whose name is `:name`, and returns 404 if the user doesn't show up.
+- POST `/users` with JSON like `{ "name": "String", "email": "String" }` to create a User.
 
 ## src/Main.hs
 
