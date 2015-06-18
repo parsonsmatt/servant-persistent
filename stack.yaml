@@ -1,0 +1,6 @@
+flags:
+  servant-persistent: {}
+packages:
+- '.'
+extra-deps: []
+resolver: nightly-2015-06-17
