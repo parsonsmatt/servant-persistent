@@ -25,7 +25,7 @@ executable perservant
                      , Models
                      , Api
   -- other-extensions:    
-  build-depends:       base >=4.7 && <4.8
+  build-depends:       base >=4.7 && <4.9
                      , servant >= 0.4 && < 0.5
                      , servant-server >= 0.4 && < 0.5
                      , persistent >= 2.1 && < 2.2
