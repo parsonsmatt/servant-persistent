@@ -10,6 +10,24 @@ I wrote a [blog post](http://www.parsonsmatt.org/programming/2015/06/07/servant-
 
 ## Requirements:
 
+### Haskell
+
+You can use [stack](https://github.com/commercialhaskell/stack) to get started:
+
+1. Download and install Stack
+2. Clone the repository
+3. `stack build`
+
+It'll build the executable somewhere deep in the `.stack-work/install/.../bin/perservant` directory.
+
+Alternatively, cabal can be used:
+
+1. `cabal sandbox init`
+2. `cabal install --dependencies-only && cabal configure && cabal build`
+3. `cabal run`
+
+### Database:
+
 You will need PostgreSQL installed and listening on port 5432. The default configuration uses a database name `perservant` with username/password test:test.
 
 These following steps worked on Arch Linux:
