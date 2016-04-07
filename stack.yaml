@@ -2,5 +2,7 @@ flags:
   servant-persistent: {}
 packages:
 - '.'
-extra-deps: []
-resolver: nightly-2015-06-17
+extra-deps: 
+- servant-0.5
+- servant-server-0.5
+resolver: lts-5.11
