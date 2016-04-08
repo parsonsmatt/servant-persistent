@@ -12,7 +12,6 @@ import Database.Persist.Postgresql  (insert, selectList, Entity(..)
                                     ,fromSqlKey, (==.), selectFirst)
 import Data.Int                     (Int64)
 import Servant
-import Servant.Server
 
 import Config    (Config(..))
 import Models -- (Person, userToPerson, EntityField(UserName))

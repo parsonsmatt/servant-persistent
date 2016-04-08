@@ -14,9 +14,9 @@ module Models where
 
 import Data.Aeson                  (ToJSON, FromJSON)
 import GHC.Generics                (Generic)
-import Control.Monad.Reader        (ReaderT, asks, liftIO)
-import Database.Persist.Postgresql (SqlBackend(..), runMigration, 
-                                    runSqlPool)
+import Control.Monad.Reader.Class
+import Control.Monad.IO.Class
+import Database.Persist.Sql
 import Database.Persist.TH         (share, mkPersist, sqlSettings,
                                     mkMigrate, persistLowerCase)
 
@@ -29,9 +29,10 @@ User
     deriving Show
 |]
 
-doMigrations :: ReaderT SqlBackend IO ()
+doMigrations :: SqlPersistT IO ()
 doMigrations = runMigration migrateAll
 
+runDb :: (MonadReader Config m, MonadIO m) => SqlPersistT IO b -> m b
 runDb query = do
     pool <- asks getPool
     liftIO $ runSqlPool query pool
