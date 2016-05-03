@@ -42,6 +42,7 @@ data Config
     , getEnv  :: Environment
     }
 
+
 -- | Right now, we're distinguishing between three environments. We could
 -- also add a @Staging@ environment if we needed to.
 data Environment
@@ -50,10 +51,12 @@ data Environment
     | Production
     deriving (Eq, Show, Read)
 
+
 setLogger :: Environment -> Middleware
 setLogger Test = id
 setLogger Development = logStdoutDev
 setLogger Production = logStdout
+
 
 -- | This function creates a 'ConnectionPool' for the given environment.
 -- For 'Development' and 'Test' environments, we use a stock and highly
@@ -97,10 +100,12 @@ makePool Production = do
          Nothing -> throwIO (userError "Database Configuration not present in environment.")
          Just a -> return a
 
+
 envPool :: Environment -> Int
 envPool Test = 1
 envPool Development = 1
 envPool Production = 8
+
 
 connStr :: ConnectionString
 connStr = "host=localhost dbname=perservant user=test password=test port=5432"
