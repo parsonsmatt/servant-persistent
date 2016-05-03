@@ -1,31 +1,25 @@
-{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE DataKinds                  #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE TypeOperators              #-}
 
 module Api where
 
-import Control.Monad.Except
-import Control.Monad.Reader         (ReaderT, runReaderT)
-import Control.Monad.Reader.Class
-import Network.Wai                  (Application)
-import Database.Persist.Postgresql  (insert, selectList, Entity(..)
-                                    ,fromSqlKey, (==.), selectFirst)
-import Data.Int                     (Int64)
-import Servant
+import           Control.Monad.Except
+import           Control.Monad.Reader        (ReaderT, runReaderT)
+import           Control.Monad.Reader.Class
+import           Data.Int                    (Int64)
+import           Database.Persist.Postgresql (Entity (..), fromSqlKey, insert,
+                                              selectFirst, selectList, (==.))
+import           Network.Wai                 (Application)
+import           Servant
 
-import Config    (Config(..))
-import Models -- (Person, userToPerson, EntityField(UserName))
+import           Config                      (Config (..), App(..))
+import           Models
 
-type PersonAPI = 
+type PersonAPI =
          "users" :> Get '[JSON] [Person]
     :<|> "users" :> Capture "name" String :> Get '[JSON] Person
     :<|> "users" :> ReqBody '[JSON] Person :> Post '[JSON] Int64
-
-newtype App a 
-    = App 
-    { runApp :: ReaderT Config (ExceptT ServantErr IO) a 
-    } deriving ( Functor, Applicative, Monad, MonadReader Config, 
-                 MonadError ServantErr, MonadIO)
 
 userAPI :: Proxy PersonAPI
 userAPI = Proxy

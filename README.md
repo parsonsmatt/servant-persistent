@@ -6,7 +6,7 @@
 
 For some reason, no one had created an example on how to use these guys together. I put together this minimal example to show an example implementation, along with some resource management and basic error handling.
 
-I wrote a [blog post](http://www.parsonsmatt.org/programming/2015/06/07/servant-persistent.html) that goes into a bit more detail, as well as having some exercises to work on.
+I wrote a [blog post](http://www.parsonsmatt.org/2015/06/07/servant-persistent.html) that goes into a bit more detail, as well as having some exercises to work on.
 
 ## Requirements:
 
