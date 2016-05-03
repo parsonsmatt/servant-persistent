@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>perservant</title>
+        <script src="api.js"></script>
+    </head>
+    <body>
+        <h1>Perservant</h1>
+        <label for="name">Name: <input id="name" type="text"></input></label>
+        <label for="email">Email: <input id="email" type="email"></input></label>
+        <button onclick="addUser()">Add User</button>
+        <hr>
+        <button onclick="refreshUsers()">Refresh Users</button>
+        <ul id="user-list">
+            <li>No users loaded yet...</li>
+        </ul>
+        <hr>
+        <p>Pop up a specific user name's email!</p>
+        <label for="pop-name">Name: <input id="pop-name" type="text"</input></label>
+        <button onclick="popup()">Popup</button>
+        <script>
+function refreshUsers() {
+    getUsers(function(users) {
+        var ul = document.getElementById("user-list");
+
+        while (ul.firstChild) {
+            ul.removeChild(ul.firstChild);
+        }
+
+        users.forEach(function(user) {
+            var li = document.createElement("li");
+            li.appendChild(document.createTextNode(JSON.stringify(user)));
+            ul.appendChild(li);
+        });
+    }, function(error) {
+        alert("There was an error!");
+        console.log(error);
+    }) 
+}
+
+function addUser() {
+    var name = document.getElementById("name").value;
+    var email = document.getElementById("email").value;
+    postUsers(
+        { name: name, email: email },
+        function (response) {
+            console.log("response received: ", response);
+            refreshUsers();
+        },
+        function (error) {
+            alert("Uh oh, error occured!");
+            console.log(error);
+        }
+    );
+}
+
+function popup() {
+    var name = document.getElementById("pop-name").value;
+    getUsersByName(name,
+        function (response) {
+            alert("You requested " + response.email + " and got it!");
+        },
+        function (error) {
+            alert("Woah now, that screwed up.");
+        }
+    );
+}
+        </script>
+    </body>
+</html>

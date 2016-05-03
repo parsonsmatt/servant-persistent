@@ -5,4 +5,6 @@ packages:
 extra-deps: 
 - servant-0.5
 - servant-server-0.5
+- servant-js-0.5
+- servant-foreign-0.5
 resolver: lts-5.11

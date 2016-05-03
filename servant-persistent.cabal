@@ -41,6 +41,7 @@ library
         Config
       , Models
       , Api
+      , Api.Person
     build-depends: 
         base >= 4.7 && < 4.9
       , servant >= 0.5 && < 0.6
@@ -56,24 +57,25 @@ library
       , mtl
       , monad-logger
       , transformers
+      , servant-js >= 0.5 && < 0.6
       , monad-control
 
 
-test-suite servant-persistent-test
-    type:
-        exitcode-stdio-1.0
-    hs-source-dirs:
-        test
-    main-is:
-        Spec.hs
-    other-modules:
-        ApiSpec
-    build-depends:
-        base
-      , servant-persistent
-      , QuickCheck
-      , hspec
-    ghc-options:
-        -threaded -rtsopts -with-rtsopts=-N
-    default-language:
-        Haskell2010
+-- test-suite servant-persistent-test
+--     type:
+--         exitcode-stdio-1.0
+--     hs-source-dirs:
+--         test
+--     main-is:
+--         Spec.hs
+--     other-modules:
+--         ApiSpec
+--     build-depends:
+--         base
+--       , servant-persistent
+--       , QuickCheck
+--       , hspec
+--     ghc-options:
+--         -threaded -rtsopts -with-rtsopts=-N
+--     default-language:
+--         Haskell2010

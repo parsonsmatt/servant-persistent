@@ -5,6 +5,7 @@ import           Network.Wai.Handler.Warp    (run)
 import           System.Environment          (lookupEnv)
 
 import           Api                         (app)
+import           Api.Person                  (generateJavaScript)
 import           Config                      (Config (..), Environment (..),
                                               makePool, setLogger)
 import           Models                      (doMigrations)
@@ -19,12 +20,13 @@ main = do
     let cfg = Config { getPool = pool, getEnv = env }
         logger = setLogger env
     runSqlPool doMigrations pool
+    generateJavaScript
     run port $ logger $ app cfg
 
 
 -- | Looks up a setting in the environment, with a provided default, and
 -- 'read's that information into the inferred type.
--- 
+--
 -- TODO: use 'readMay' for additional safety.
 lookupSetting :: Read a => String -> a -> IO a
 lookupSetting env def = do
