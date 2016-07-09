@@ -9,6 +9,8 @@ import           Api.Person                  (generateJavaScript)
 import           Config                      (Config (..), Environment (..),
                                               makePool, setLogger)
 import           Models                      (doMigrations)
+import           Safe                        (readMay)
+
 
 -- | The 'main' function gathers the required environment information and
 -- initializes the application.
@@ -23,13 +25,21 @@ main = do
     generateJavaScript
     run port $ logger $ app cfg
 
-
 -- | Looks up a setting in the environment, with a provided default, and
 -- 'read's that information into the inferred type.
---
--- TODO: use 'readMay' for additional safety.
 lookupSetting :: Read a => String -> a -> IO a
 lookupSetting env def = do
-    p <- lookupEnv env
-    return $ case p of Nothing -> def
-                       Just a  -> read a
+    maybeValue <- lookupEnv env
+    case maybeValue of
+        Nothing ->
+            return def
+        Just str ->
+            maybe (handleFailedRead str) return (readMay str)
+  where
+    handleFailedRead str =
+        error $ mconcat 
+            [ "Failed to read [["
+            , str
+            , "]] for environment variable "
+            , env
+            ]

@@ -1,0 +1,5 @@
+exec: ../perservant
+host: your.host.name.com
+
+plugins:
+    postgres: true

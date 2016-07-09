@@ -33,7 +33,6 @@ newtype App a
     } deriving ( Functor, Applicative, Monad, MonadReader Config,
                  MonadError ServantErr, MonadIO)
 
-
 -- | The Config for our application is (for now) the 'Environment' we're
 -- running in and a Persistent 'ConnectionPool'.
 data Config
@@ -41,7 +40,6 @@ data Config
     { getPool :: ConnectionPool
     , getEnv  :: Environment
     }
-
 
 -- | Right now, we're distinguishing between three environments. We could
 -- also add a @Staging@ environment if we needed to.
@@ -51,12 +49,11 @@ data Environment
     | Production
     deriving (Eq, Show, Read)
 
-
+-- | This returns a 'Middleware' based on the environment that we're in.
 setLogger :: Environment -> Middleware
 setLogger Test = id
 setLogger Development = logStdoutDev
 setLogger Production = logStdout
-
 
 -- | This function creates a 'ConnectionPool' for the given environment.
 -- For 'Development' and 'Test' environments, we use a stock and highly
@@ -65,9 +62,9 @@ setLogger Production = logStdout
 -- deployment application.
 makePool :: Environment -> IO ConnectionPool
 makePool Test =
-    runNoLoggingT (createPostgresqlPool connStr (envPool Test))
+    runNoLoggingT (createPostgresqlPool (connStr "test") (envPool Test))
 makePool Development =
-    runStdoutLoggingT (createPostgresqlPool connStr (envPool Development))
+    runStdoutLoggingT (createPostgresqlPool (connStr "") (envPool Development))
 makePool Production = do
     -- This function makes heavy use of the 'MaybeT' monad transformer, which
     -- might be confusing if you're not familiar with it. It allows us to
@@ -90,7 +87,7 @@ makePool Production = do
                    , "PGDATABASE"
                    ]
         envVars <- traverse (MaybeT . lookupEnv) envs
-        let prodStr = mconcat . zipWith (<>) keys . fmap BS.pack $ envVars
+        let prodStr = mconcat . zipWith (<>) keys $ BS.pack <$> envVars
         runStdoutLoggingT $ createPostgresqlPool prodStr (envPool Production)
     case pool of
         -- If we don't have a correct database configuration, we can't
@@ -100,12 +97,13 @@ makePool Production = do
          Nothing -> throwIO (userError "Database Configuration not present in environment.")
          Just a -> return a
 
-
+-- | The number of pools to use for a given environment.
 envPool :: Environment -> Int
 envPool Test = 1
 envPool Development = 1
 envPool Production = 8
 
-
-connStr :: ConnectionString
-connStr = "host=localhost dbname=perservant user=test password=test port=5432"
+-- | A basic 'ConnectionString' for local/test development. Pass in either
+-- @""@ for 'Development' or @"test"@ for 'Test'.
+connStr :: BS.ByteString -> ConnectionString
+connStr sfx = "host=localhost dbname=perservant" <> sfx <> " user=test password=test port=5432"

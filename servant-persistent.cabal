@@ -27,6 +27,7 @@ executable perservant
       , wai
       , warp
       , monad-logger
+      , safe
     hs-source-dirs:
         app   
     default-language:
@@ -41,24 +42,24 @@ library
         Config
       , Models
       , Api
-      , Api.Person
+      , Api.User
     build-depends: 
         base >= 4.7 && < 4.9
-      , servant >= 0.5 && < 0.6
-      , servant-server >= 0.5 && < 0.6
+      , aeson
+      , bytestring
+      , monad-control
+      , monad-logger
+      , mtl
       , persistent
       , persistent-postgresql
       , persistent-template
+      , servant >= 0.7 && < 0.8
+      , servant-js >= 0.7 && < 0.8
+      , servant-server >= 0.7 && < 0.8
+      , transformers
       , wai
-      , bytestring
       , wai-extra
       , warp
-      , aeson
-      , mtl
-      , monad-logger
-      , transformers
-      , servant-js >= 0.5 && < 0.6
-      , monad-control
 
 
 test-suite servant-persistent-test
