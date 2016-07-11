@@ -5,7 +5,7 @@ import           Network.Wai.Handler.Warp    (run)
 import           System.Environment          (lookupEnv)
 
 import           Api                         (app)
-import           Api.Person                  (generateJavaScript)
+import           Api.User                    (generateJavaScript)
 import           Config                      (Config (..), Environment (..),
                                               makePool, setLogger)
 import           Models                      (doMigrations)
@@ -37,7 +37,7 @@ lookupSetting env def = do
             maybe (handleFailedRead str) return (readMay str)
   where
     handleFailedRead str =
-        error $ mconcat 
+        error $ mconcat
             [ "Failed to read [["
             , str
             , "]] for environment variable "
