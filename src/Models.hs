@@ -29,7 +29,7 @@ User json
     deriving Show
 |]
 
-doMigrations :: SqlPersistM ()
+doMigrations :: SqlPersistT IO ()
 doMigrations = runMigration migrateAll
 
 runDb :: (MonadReader Config m, MonadIO m) => SqlPersistT IO b -> m b
