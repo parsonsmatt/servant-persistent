@@ -1,5 +1,7 @@
 # servant-persistent
 
+[![Build Status](https://travis-ci.org/parsonsmatt/servant-persistent.svg?branch=master)](https://travis-ci.org/parsonsmatt/servant-persistent)
+
 [Servant](https://haskell-servant.github.io/) is an awesome Haskell library for writing web APIs. It uses the type system in a way that can only be described as magic to generate type safe routes as well as clients.
 
 [Persistent](http://www.yesodweb.com/book/persistent) is another awesome Haskell library for querying databases. It manages migrations, your schema, and querying to make data transactions mostly painless.
