@@ -29,6 +29,15 @@ Alternatively, cabal can be used:
 
 You will need PostgreSQL installed and listening on port 5432. The default configuration uses a database name `perservant` with username/password test:test.
 
+These steps work on Ubuntu:
+
+```haskell
+$ apt install postgres libpq-dev
+$ sudo -u postgres createuser -se test
+$ sudo -u postgres psql -c "alter role test with password 'test'"
+$ sudo -u postgres psql -c "create database perservant"
+```
+
 These following steps worked on Arch Linux:
 
 ```
