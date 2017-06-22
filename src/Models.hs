@@ -26,7 +26,7 @@ share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
 User json
     name String
     email String
-    deriving Show
+    deriving Show Eq
 |]
 
 doMigrations :: SqlPersistT IO ()
