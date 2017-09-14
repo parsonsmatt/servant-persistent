@@ -7,6 +7,7 @@ module UserDbSpec where
 import Test.Hspec
 import Test.QuickCheck
 
+import Control.Exception (throwIO)
 import Control.Monad.Except (runExceptT)
 import Control.Monad.Reader (runReaderT)
 
@@ -25,7 +26,7 @@ runAppToIO :: Config -> App a -> IO a
 runAppToIO config app = do
     result <- runExceptT $ runReaderT (runApp app) config
     case result of
-        Left err -> error $ show err
+        Left err -> throwIO err
         Right a -> return a
 
 setupTeardown :: (Config -> IO a) -> IO ()
