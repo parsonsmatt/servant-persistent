@@ -16,10 +16,11 @@ import           Servant.JS                  (vanillaJS, writeJSForAPI)
 
 import           Config                      (App (..), Config (..))
 import           Models
+import           Data.Text (Text)
 
 type UserAPI =
          "users" :> Get '[JSON] [Entity User]
-    :<|> "users" :> Capture "name" String :> Get '[JSON] (Entity User)
+    :<|> "users" :> Capture "name" Text :> Get '[JSON] (Entity User)
     :<|> "users" :> ReqBody '[JSON] User :> Post '[JSON] Int64
 
 -- | The server that runs the UserAPI
@@ -32,7 +33,7 @@ allUsers =
     runDb (selectList [] [])
 
 -- | Returns a user by name or throws a 404 error.
-singleUser :: String -> App (Entity User)
+singleUser :: Text -> App (Entity User)
 singleUser str = do
     maybeUser <- runDb (selectFirst [UserName ==. str] [])
     case maybeUser of

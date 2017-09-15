@@ -21,6 +21,7 @@ import Servant
 import Api.User
 import Config (App(..), Config(..), Environment(..), makePool)
 import Models
+import qualified Data.Text as T
 
 runAppToIO :: Config -> App a -> IO a
 runAppToIO config app = do
@@ -52,10 +53,10 @@ spec =
     around setupTeardown $ do
         describe "User" $ do
             it "singleUser fetches User by name" $ \config -> do
-                let user = User "username" "email"
+                let user = User (T.pack "username") (T.pack "email")
                 dbUser <-
                     runAppToIO config $ do
                         runDb $ insert user
-                        Entity _ user <- singleUser "username"
+                        Entity _ user <- singleUser (T.pack "username")
                         return user
                 dbUser `shouldBe` user
