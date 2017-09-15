@@ -22,14 +22,14 @@ executable perservant
         Main.hs
     build-depends:
         base >=4.7 && <4.9
-      , servant-persistent 
+      , servant-persistent
       , persistent-postgresql
       , wai
       , warp
       , monad-logger
       , safe
     hs-source-dirs:
-        app   
+        app
     default-language:
         Haskell2010
 
@@ -43,7 +43,7 @@ library
       , Models
       , Api
       , Api.User
-    build-depends: 
+    build-depends:
         base >= 4.7 && < 4.9
       , aeson
       , bytestring
@@ -71,11 +71,18 @@ test-suite servant-persistent-test
         Spec.hs
     other-modules:
         ApiSpec
+        UserDbSpec
     build-depends:
         base
+      , persistent
+      , persistent-postgresql
       , servant-persistent
+      , servant >= 0.7 && < 0.8
+      , servant-server >= 0.7 && < 0.8
       , QuickCheck
       , hspec
+      , mtl
+      , transformers
     ghc-options:
         -threaded -rtsopts -with-rtsopts=-N
     default-language:

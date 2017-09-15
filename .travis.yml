@@ -26,6 +26,14 @@ before_install:
 - export PATH=$HOME/.local/bin:$PATH
 - travis_retry curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
 
+services:
+- postgresql
+
+before_script:
+- psql -c 'create database test;' -U postgres
+- psql -c 'create role test LOGIN CREATEDB;' -U postgres
+- psql -c 'create database "perservant-test";' -U test
+
 # This line does all of the work: installs GHC if necessary, build the library,
 # executables, and test suites, and runs the test suites. --no-terminal works
 # around some quirks in Travis's terminal implementation.
