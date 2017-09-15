@@ -87,7 +87,7 @@ makePool Production = do
                    , "PGDATABASE"
                    ]
         envVars <- traverse (MaybeT . lookupEnv) envs
-        let prodStr = mconcat . zipWith (<>) keys $ BS.pack <$> envVars
+        let prodStr = BS.intercalate " " . zipWith (<>) keys $ BS.pack <$> envVars
         runStdoutLoggingT $ createPostgresqlPool prodStr (envPool Production)
     case pool of
         -- If we don't have a correct database configuration, we can't
