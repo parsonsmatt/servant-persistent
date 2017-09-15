@@ -21,11 +21,12 @@ import           Database.Persist.TH  (mkMigrate, mkPersist, persistLowerCase,
 import           GHC.Generics         (Generic)
 
 import           Config
+import           Data.Text (Text)
 
 share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
 User json
-    name String
-    email String
+    name Text
+    email Text
     deriving Show Eq
 |]
 
