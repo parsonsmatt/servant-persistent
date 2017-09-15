@@ -60,6 +60,7 @@ library
       , wai
       , wai-extra
       , warp
+      , text
 
 
 test-suite servant-persistent-test
