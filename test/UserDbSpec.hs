@@ -20,11 +20,11 @@ import Database.Persist.Types (Filter)
 import Servant
 
 import Api.User
-import Config (AppT(..), Config(..), Environment(..), makePool)
+import Config (AppT(..), App, Config(..), Environment(..), makePool)
 import Models
 import qualified Data.Text as T
 
-runAppToIO :: Config -> AppT IO a -> IO a
+runAppToIO :: Config -> App a -> IO a
 runAppToIO config app = do
     result <- runExceptT $ runReaderT (runApp app) config
     case result of
