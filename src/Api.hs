@@ -34,7 +34,7 @@ appToServer cfg = enter (convertApp cfg) userServer
 -- application. The ':~>' type is a natural transformation, or, in
 -- non-category theory terms, a function that converts two type
 -- constructors without looking at the values in the types.
-convertApp :: Config -> App :~> ExceptT ServantErr IO
+convertApp :: Config -> App m :~> ExceptT ServantErr m
 convertApp cfg = Nat (flip runReaderT cfg . runApp)
 
 -- | Since we also want to provide a minimal front end, we need to give

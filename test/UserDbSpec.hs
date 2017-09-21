@@ -10,6 +10,7 @@ import Test.QuickCheck
 import Control.Exception (throwIO)
 import Control.Monad.Except (runExceptT)
 import Control.Monad.Reader (runReaderT)
+import Control.Monad.IO.Class
 
 import Database.Persist.Postgresql
        (Entity(..), (==.), deleteWhere, fromSqlKey, insert, runSqlPool,
@@ -23,7 +24,7 @@ import Config (App(..), Config(..), Environment(..), makePool)
 import Models
 import qualified Data.Text as T
 
-runAppToIO :: Config -> App a -> IO a
+runAppToIO :: Config -> App IO a -> IO a
 runAppToIO config app = do
     result <- runExceptT $ runReaderT (runApp app) config
     case result of

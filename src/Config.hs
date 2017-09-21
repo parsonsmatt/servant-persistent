@@ -27,9 +27,9 @@ import           System.Environment                   (lookupEnv)
 --
 -- By encapsulating the effects in our newtype, we can add layers to the
 -- monad stack without having to modify code that uses the current layout.
-newtype App a
+newtype App m a
     = App
-    { runApp :: ReaderT Config (ExceptT ServantErr IO) a
+    { runApp :: ReaderT Config (ExceptT ServantErr m) a
     } deriving ( Functor, Applicative, Monad, MonadReader Config,
                  MonadError ServantErr, MonadIO)
 
