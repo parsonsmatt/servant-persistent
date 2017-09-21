@@ -10,6 +10,7 @@ import Test.QuickCheck
 import Control.Exception (throwIO)
 import Control.Monad.Except (runExceptT)
 import Control.Monad.Reader (runReaderT)
+import Control.Monad.IO.Class
 
 import Database.Persist.Postgresql
        (Entity(..), (==.), deleteWhere, fromSqlKey, insert, runSqlPool,
@@ -19,7 +20,7 @@ import Database.Persist.Types (Filter)
 import Servant
 
 import Api.User
-import Config (App(..), Config(..), Environment(..), makePool)
+import Config (AppT(..), App, Config(..), Environment(..), makePool)
 import Models
 import qualified Data.Text as T
 
