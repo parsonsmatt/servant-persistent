@@ -29,8 +29,8 @@ userApp cfg = serve (Proxy :: Proxy UserAPI) (appToServer cfg)
 appToServer :: Config -> Server UserAPI
 appToServer cfg = enter (convertApp cfg) userServer
 
--- | This function converts our 'App' monad into the @ExceptT ServantErr
--- IO@ monad that Servant's 'enter' function needs in order to run the
+-- | This function converts our 'AppT m' monad into the @ExceptT ServantErr
+-- m@ monad that Servant's 'enter' function needs in order to run the
 -- application. The ':~>' type is a natural transformation, or, in
 -- non-category theory terms, a function that converts two type
 -- constructors without looking at the values in the types.
