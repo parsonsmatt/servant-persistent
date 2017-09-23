@@ -31,6 +31,8 @@ executable perservant
       , monad-metrics
       , wai-middleware-metrics
       , microlens
+      , ekg
+      , ekg-core
     hs-source-dirs:
         app
     default-language:
@@ -67,6 +69,9 @@ library
       , monad-metrics
       , ekg
       , wai-middleware-metrics
+      , microlens
+      , unordered-containers
+      , ekg-core
 
 test-suite servant-persistent-test
     type:

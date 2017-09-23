@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 module Main where
 
 import           Database.Persist.Postgresql (runSqlPool)
@@ -13,6 +14,8 @@ import           Safe                        (readMay)
 import qualified Control.Monad.Metrics as M
 import           Network.Wai.Metrics
 import           Lens.Micro
+import System.Metrics (newStore)
+import System.Remote.Monitoring (serverMetricStore, forkServer)
 
 -- | The 'main' function gathers the required environment information and
 -- initializes the application.
@@ -21,8 +24,9 @@ main = do
     env  <- lookupSetting "ENV" Development
     port <- lookupSetting "PORT" 8081
     pool <- makePool env
-    metr <- M.initialize
-    waiMetrics <- registerWaiMetrics (metr ^. M.metricsStore)
+    store <- serverMetricStore <$> forkServer "localhost" 8000
+    waiMetrics <- registerWaiMetrics store
+    metr <- M.initializeWith store
     let cfg = Config { getPool = pool, getEnv = env, getMetrics = metr }
         logger = setLogger env
     runSqlPool doMigrations pool
