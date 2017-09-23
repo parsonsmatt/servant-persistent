@@ -74,7 +74,6 @@ library
       , unordered-containers
       , ekg-core
       , katip
-      , string-conv
       , fast-logger
 
 test-suite servant-persistent-test
