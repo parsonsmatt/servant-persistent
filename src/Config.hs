@@ -5,26 +5,26 @@
 module Config where
 
 import           Control.Exception           (throwIO)
+import           Control.Monad
 import           Control.Monad.Except        (ExceptT, MonadError)
+import           Control.Monad.IO.Class
 import           Control.Monad.Logger        (MonadLogger (..), toLogStr)
 import           Control.Monad.Metrics
 import           Control.Monad.Reader        (MonadIO, MonadReader, ReaderT,
                                               ask, asks)
+import           Control.Monad.Trans.Class
 import           Control.Monad.Trans.Maybe   (MaybeT (..), runMaybeT)
+import           System.Environment          (lookupEnv)
+
 import qualified Data.ByteString.Char8       as BS
 import           Data.Monoid                 ((<>))
+
 import           Database.Persist.Postgresql (ConnectionPool, ConnectionString,
                                               createPostgresqlPool)
 import           Network.Wai                 (Middleware)
 import           Servant                     (ServantErr)
-import           System.Environment          (lookupEnv)
 
-import           Control.Monad
-import           Control.Monad.IO.Class
-import           Control.Monad.Trans.Class
-import qualified Katip                       as K
-import           Logger                      (Katip (..), LogEnv, adapt,
-                                              mkLogEnv, runKatipT)
+import           Logger
 
 -- | This type represents the effects we want to have for our application.
 -- We wrap the standard Servant monad with 'ReaderT Config', which gives us
@@ -60,11 +60,11 @@ instance MonadIO m => Katip (AppT m) where
 
 -- | MonadLogger instance to use within @AppT m@
 instance MonadIO m => MonadLogger (AppT m) where
-    monadLoggerLog = adapt K.logMsg
+    monadLoggerLog = adapt logMsg
 
 -- | MonadLogger instance to use in @makePool@
-instance MonadIO m => MonadLogger (K.KatipT m) where
-    monadLoggerLog = adapt K.logMsg
+instance MonadIO m => MonadLogger (KatipT m) where
+    monadLoggerLog = adapt logMsg
 
 -- | Right now, we're distinguishing between three environments. We could
 -- also add a @Staging@ environment if we needed to.
@@ -85,7 +85,7 @@ setLogger Production env = katipLogger env
 katipLogger :: LogEnv -> Middleware
 katipLogger env app req respond = runKatipT env $ do
     -- todo: log proper request data
-    K.logMsg "web" K.InfoS "todo: received some request"
+    logMsg "web" InfoS "todo: received some request"
     liftIO $ app req respond
 
 -- | This function creates a 'ConnectionPool' for the given environment.

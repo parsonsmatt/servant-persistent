@@ -5,6 +5,8 @@ module Logger (
     KatipT(..),
     Katip(..),
     LogEnv,
+    logMsg,
+    Severity(..),
     adapt
 ) where
 
@@ -33,10 +35,10 @@ fromLevel LevelError = ErrorS
 fromLevel (LevelOther _) = NoticeS
 
 adapt :: (ToLogStr msg, Applicative m, Katip m)  =>
-         (K.Namespace -> K.Severity -> K.LogStr -> m ()) ->
+         (Namespace -> Severity -> K.LogStr -> m ()) ->
          Loc -> LogSource -> LogLevel -> msg -> m ()
 adapt f _ src lvl msg =
     f ns (fromLevel lvl) $ logStr' msg
   where
-    ns = K.Namespace [src]
-    logStr' = K.logStr . fromLogStr . toLogStr
+    ns = Namespace [src]
+    logStr' = logStr . fromLogStr . toLogStr
