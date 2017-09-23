@@ -21,7 +21,7 @@ import           Database.Persist.TH  (mkMigrate, mkPersist, persistLowerCase,
 import           GHC.Generics         (Generic)
 
 import           Config
-import           Data.Text (Text)
+import           Data.Text            (Text)
 
 share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
 User json

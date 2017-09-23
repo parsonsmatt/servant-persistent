@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 module Main where
 
 import           Database.Persist.Postgresql (runSqlPool)
@@ -10,7 +11,11 @@ import           Config                      (Config (..), Environment (..),
                                               makePool, setLogger)
 import           Models                      (doMigrations)
 import           Safe                        (readMay)
-
+import qualified Control.Monad.Metrics as M
+import           Network.Wai.Metrics
+import           Lens.Micro
+import           System.Metrics              (newStore)
+import           System.Remote.Monitoring    (serverMetricStore, forkServer)
 
 -- | The 'main' function gathers the required environment information and
 -- initializes the application.
@@ -19,11 +24,14 @@ main = do
     env  <- lookupSetting "ENV" Development
     port <- lookupSetting "PORT" 8081
     pool <- makePool env
-    let cfg = Config { getPool = pool, getEnv = env }
+    store <- serverMetricStore <$> forkServer "localhost" 8000
+    waiMetrics <- registerWaiMetrics store
+    metr <- M.initializeWith store
+    let cfg = Config { getPool = pool, getEnv = env, getMetrics = metr }
         logger = setLogger env
     runSqlPool doMigrations pool
     generateJavaScript
-    run port $ logger $ app cfg
+    run port $ logger $ metrics waiMetrics $ app cfg
 
 -- | Looks up a setting in the environment, with a provided default, and
 -- 'read's that information into the inferred type.

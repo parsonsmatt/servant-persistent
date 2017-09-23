@@ -28,6 +28,11 @@ executable perservant
       , warp
       , monad-logger
       , safe
+      , monad-metrics
+      , wai-middleware-metrics
+      , microlens
+      , ekg
+      , ekg-core
     hs-source-dirs:
         app
     default-language:
@@ -61,7 +66,12 @@ library
       , wai-extra
       , warp
       , text
-
+      , monad-metrics
+      , ekg
+      , wai-middleware-metrics
+      , microlens
+      , unordered-containers
+      , ekg-core
 
 test-suite servant-persistent-test
     type:
@@ -85,6 +95,7 @@ test-suite servant-persistent-test
       , mtl
       , transformers
       , text
+      , monad-metrics
     ghc-options:
         -threaded -rtsopts -with-rtsopts=-N
     default-language:

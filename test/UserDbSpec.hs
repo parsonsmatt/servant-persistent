@@ -23,6 +23,7 @@ import Api.User
 import Config (AppT(..), App, Config(..), Environment(..), makePool)
 import Models
 import qualified Data.Text as T
+import Control.Monad.Metrics (initialize)
 
 runAppToIO :: Config -> App a -> IO a
 runAppToIO config app = do
@@ -34,8 +35,9 @@ runAppToIO config app = do
 setupTeardown :: (Config -> IO a) -> IO ()
 setupTeardown runTestsWith = do
     pool <- makePool Test
+    metrics <- initialize
     migrateDb pool
-    runTestsWith $ Config {getPool = pool, getEnv = Test}
+    runTestsWith $ Config {getPool = pool, getEnv = Test, getMetrics = metrics}
     cleanDb pool
   where
     migrateDb :: ConnectionPool -> IO ()
