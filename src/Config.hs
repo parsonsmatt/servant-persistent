@@ -5,7 +5,6 @@
 module Config where
 
 import           Control.Exception           (throwIO)
-import           Control.Monad               (liftM)
 import           Control.Monad.Except        (ExceptT, MonadError)
 import           Control.Monad.Logger        (MonadLogger (..), toLogStr)
 import           Control.Monad.Metrics

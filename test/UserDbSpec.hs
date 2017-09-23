@@ -40,7 +40,7 @@ setupTeardown runTestsWith = do
     metrics <- initialize
     env <- mkLogEnv
     migrateDb pool
-    runTestsWith $ Config {getPool = pool, getEnv = Test, getMetrics = metrics, getLogEnv = env}
+    runTestsWith $ Config {getPool = pool, getEnv = Test, getMetrics = metrics, configLogEnv = env}
     cleanDb pool
   where
     migrateDb :: ConnectionPool -> IO ()
