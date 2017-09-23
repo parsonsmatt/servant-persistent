@@ -8,7 +8,7 @@ import           Control.Monad.Except                 (ExceptT, MonadError)
 import           Control.Monad.Logger                 (runNoLoggingT,
                                                        runStdoutLoggingT)
 import           Control.Monad.Reader                 (MonadIO, MonadReader,
-                                                       ReaderT)
+                                                       ReaderT, ask)
 import           Control.Monad.Trans.Maybe            (MaybeT (..), runMaybeT)
 import qualified Data.ByteString.Char8                as BS
 import           Data.Monoid                          ((<>))
@@ -20,6 +20,7 @@ import           Network.Wai.Middleware.RequestLogger (logStdout, logStdoutDev)
 import           Servant                              (ServantErr)
 import           System.Environment                   (lookupEnv)
 import           Control.Monad.Metrics
+import           Control.Monad                        (liftM)
 
 -- | This type represents the effects we want to have for our application.
 -- We wrap the standard Servant monad with 'ReaderT Config', which gives us
@@ -44,6 +45,9 @@ data Config
     , getEnv  :: Environment
     , getMetrics :: Metrics
     }
+
+instance Monad m => MonadMetrics (AppT m) where
+    getMetrics = liftM Config.getMetrics ask
 
 -- | Right now, we're distinguishing between three environments. We could
 -- also add a @Staging@ environment if we needed to.
