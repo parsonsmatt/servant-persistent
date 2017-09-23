@@ -79,10 +79,16 @@ data Environment
     deriving (Eq, Show, Read)
 
 -- | This returns a 'Middleware' based on the environment that we're in.
-setLogger :: Environment -> Middleware
-setLogger Test = id
-setLogger Development = id
-setLogger Production = id
+setLogger :: Environment -> LogEnv -> Middleware
+setLogger Test _ = id
+setLogger Development env = katipLogger env
+setLogger Production env = katipLogger env
+
+katipLogger :: LogEnv -> Middleware
+katipLogger env app req respond = runKatipT env $ do
+    -- todo: log proper request data
+    K.logMsg "ns-std" K.InfoS "received some request"
+    liftIO $ app req respond
 
 -- | This function creates a 'ConnectionPool' for the given environment.
 -- For 'Development' and 'Test' environments, we use a stock and highly

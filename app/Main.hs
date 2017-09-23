@@ -30,7 +30,7 @@ main = do
     metr <- M.initializeWith store
     logEnv <- mkLogEnv
     let cfg = Config {getPool = pool, getEnv = env, getMetrics = metr, configLogEnv = logEnv}
-        logger = setLogger env
+        logger = setLogger env logEnv
     runSqlPool doMigrations pool
     generateJavaScript
     run port $ logger $ metrics waiMetrics $ app cfg
