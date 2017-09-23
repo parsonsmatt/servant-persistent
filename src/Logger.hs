@@ -17,6 +17,5 @@ import           Katip                  as K
 mkLogEnv :: IO LogEnv
 mkLogEnv = do
     handleScribe <- mkHandleScribe ColorIfTerminal stdout InfoS V2
-    liftM (registerScribe "stdout" handleScribe) $ --todo replace liftM with fmap
-        initLogEnv "servant-persistent" "production"
+    registerScribe "stdout" handleScribe <$> initLogEnv "servant-persistent" "production"
 
