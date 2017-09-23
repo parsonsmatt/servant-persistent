@@ -5,6 +5,7 @@ module Logger (
     KatipT(..),
     Katip(..),
     LogEnv,
+    adapt
 ) where
 
 import           Control.Exception
@@ -17,8 +18,25 @@ import           System.Log.FastLogger.Date (FormattedTime, newTimeCache,
                                              simpleTimeFormat)
 
 import           Katip                      as K
+import           System.Log.FastLogger      (fromLogStr)
 
 mkLogEnv :: IO LogEnv
 mkLogEnv = do
-    handleScribe <- mkHandleScribe ColorIfTerminal stdout InfoS V2
+    handleScribe <- mkHandleScribe ColorIfTerminal stdout DebugS V2
     registerScribe "stdout" handleScribe <$> initLogEnv "servant-persistent" "production"
+
+fromLevel :: LogLevel -> Severity
+fromLevel LevelDebug = DebugS
+fromLevel LevelInfo  = InfoS
+fromLevel LevelWarn  = WarningS
+fromLevel LevelError = ErrorS
+fromLevel (LevelOther _) = NoticeS
+
+adapt :: (ToLogStr msg, Applicative m, Katip m)  =>
+         (K.Namespace -> K.Severity -> K.LogStr -> m ()) ->
+         Loc -> LogSource -> LogLevel -> msg -> m ()
+adapt f _ src lvl msg =
+    f ns (fromLevel lvl) $ logStr' msg
+  where
+    ns = K.Namespace [src]
+    logStr' = K.logStr . fromLogStr . toLogStr

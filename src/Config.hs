@@ -24,9 +24,8 @@ import           Control.Monad
 import           Control.Monad.IO.Class
 import           Control.Monad.Trans.Class
 import qualified Katip                       as K
-import           Logger                      (Katip (..), LogEnv, mkLogEnv,
-                                              runKatipT)
-import           System.Log.FastLogger       (fromLogStr)
+import           Logger                      (Katip (..), LogEnv, adapt,
+                                              mkLogEnv, runKatipT)
 
 -- | This type represents the effects we want to have for our application.
 -- We wrap the standard Servant monad with 'ReaderT Config', which gives us
@@ -62,13 +61,11 @@ instance MonadIO m => Katip (AppT m) where
 
 -- | MonadLogger instance to use within @AppT m@
 instance MonadIO m => MonadLogger (AppT m) where
-    monadLoggerLog loc src lvl msg =
-        K.logMsg "ns-std" K.InfoS $ K.logStr (fromLogStr $ toLogStr msg)
+    monadLoggerLog = adapt K.logMsg
 
 -- | MonadLogger instance to use in @makePool@
 instance MonadIO m => MonadLogger (K.KatipT m) where
-    monadLoggerLog loc src lvl msg =
-        K.logMsg "ns-std" K.InfoS $ K.logStr (fromLogStr $ toLogStr msg)
+    monadLoggerLog = adapt K.logMsg
 
 -- | Right now, we're distinguishing between three environments. We could
 -- also add a @Staging@ environment if we needed to.
@@ -84,10 +81,12 @@ setLogger Test _ = id
 setLogger Development env = katipLogger env
 setLogger Production env = katipLogger env
 
+-- | Web request logger (currently unimplemented). For inspiration see
+-- ApacheLogger from wai-logger package.
 katipLogger :: LogEnv -> Middleware
 katipLogger env app req respond = runKatipT env $ do
     -- todo: log proper request data
-    K.logMsg "ns-std" K.InfoS "received some request"
+    K.logMsg "web" K.InfoS "todo: received some request"
     liftIO $ app req respond
 
 -- | This function creates a 'ConnectionPool' for the given environment.

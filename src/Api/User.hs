@@ -42,14 +42,14 @@ userServer = allUsers :<|> singleUser :<|> createUser :<|> waiMetrics
 allUsers :: MonadIO m => AppT m [Entity User]
 allUsers = do
     increment "allUsers"
-    logDebugNS "allUsers" "allUsers"
+    logDebugNS "web" "allUsers"
     runDb (selectList [] [])
 
 -- | Returns a user by name or throws a 404 error.
 singleUser :: MonadIO m => Text -> AppT m (Entity User)
 singleUser str = do
     increment "singleUser"
-    logDebugNS "singleUser" "singleUser"
+    logDebugNS "web" "singleUser"
     maybeUser <- runDb (selectFirst [UserName ==. str] [])
     case maybeUser of
          Nothing ->
@@ -61,7 +61,7 @@ singleUser str = do
 createUser :: MonadIO m => User -> AppT m Int64
 createUser p = do
     increment "createUser"
-    logDebugNS "createUser" "creating a user"
+    logDebugNS "web" "creating a user"
     newUser <- runDb (insert (User (userName p) (userEmail p)))
     return $ fromSqlKey newUser
 
@@ -69,7 +69,7 @@ createUser p = do
 waiMetrics :: MonadIO m => AppT m (LH.HashMap Text Int64)
 waiMetrics = do
     increment "metrics"
-    logDebugNS "metrics" "metrics"
+    logDebugNS "web" "metrics"
     metr <- M.getMetrics
     liftIO $ mapM C.read =<< readIORef (metr ^. metricsCounters)
 
