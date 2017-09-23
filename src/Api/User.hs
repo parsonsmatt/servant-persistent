@@ -38,12 +38,14 @@ userServer = allUsers :<|> singleUser :<|> createUser :<|> waiMetrics
 
 -- | Returns all users in the database.
 allUsers :: MonadIO m => AppT m [Entity User]
-allUsers =
+allUsers = do
+    increment "allUsers"
     runDb (selectList [] [])
 
 -- | Returns a user by name or throws a 404 error.
 singleUser :: MonadIO m => Text -> AppT m (Entity User)
 singleUser str = do
+    increment "singleUser"
     maybeUser <- runDb (selectFirst [UserName ==. str] [])
     case maybeUser of
          Nothing ->
@@ -54,12 +56,14 @@ singleUser str = do
 -- | Creates a user in the database.
 createUser :: MonadIO m => User -> AppT m Int64
 createUser p = do
+    increment "createUser"
     newUser <- runDb (insert (User (userName p) (userEmail p)))
     return $ fromSqlKey newUser
 
 -- | Return wai metrics as JSON
 waiMetrics :: MonadIO m => AppT m (LH.HashMap Text Int64)
 waiMetrics = do
+    increment "metrics"
     metr <- M.getMetrics
     liftIO $ snapshot =<< readIORef (metr ^. metricsCounters)
 
