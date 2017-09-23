@@ -1,5 +1,4 @@
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
 module Logger (
     mkLogEnv,
     runKatipT,
@@ -7,24 +6,21 @@ module Logger (
     LogEnv,
 ) where
 
-import Control.Monad.Logger
-import Control.Monad
-import Control.Monad.IO.Class
-import System.IO (stdout)
-import Data.Text
-import Data.String.Conv
-import qualified Control.Monad.Logger as CML
-import Data.Monoid
+import           Control.Monad
+import           Control.Monad.IO.Class
+import           Control.Monad.Logger
+import           System.IO              (stdout)
 
-import Katip
+import           Katip                  as K
+import           Katip.Core             as K
+import           System.Log.FastLogger  (fromLogStr)
 
 mkLogEnv :: IO LogEnv
 mkLogEnv = do
     handleScribe <- mkHandleScribe ColorIfTerminal stdout InfoS V2
-    liftM (registerScribe "stdout" handleScribe) $
+    liftM (registerScribe "stdout" handleScribe) $ --todo replace liftM with fmap
         initLogEnv "servant-persistent" "production"
 
 instance MonadIO m => MonadLogger (KatipT m) where
-    monadLoggerLog loc src lvl msg = return ()
-        -- logMsg "ns-std" InfoS $ logStr msg
-
+    monadLoggerLog loc src lvl msg =
+        logMsg "ns-std" InfoS $ logStr (fromLogStr $ toLogStr msg)

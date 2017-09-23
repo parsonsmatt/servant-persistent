@@ -75,6 +75,7 @@ library
       , ekg-core
       , katip
       , string-conv
+      , fast-logger
 
 test-suite servant-persistent-test
     type:
