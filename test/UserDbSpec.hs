@@ -1,29 +1,31 @@
-{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE DataKinds                  #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE TypeOperators              #-}
 
 module UserDbSpec where
 
-import Test.Hspec
-import Test.QuickCheck
+import           Test.Hspec
+import           Test.QuickCheck
 
-import Control.Exception (throwIO)
-import Control.Monad.Except (runExceptT)
-import Control.Monad.Reader (runReaderT)
-import Control.Monad.IO.Class
+import           Control.Exception           (throwIO)
+import           Control.Monad.Except        (runExceptT)
+import           Control.Monad.IO.Class
+import           Control.Monad.Reader        (runReaderT)
 
-import Database.Persist.Postgresql
-       (Entity(..), (==.), deleteWhere, fromSqlKey, insert, runSqlPool,
-        selectFirst, selectList)
-import Database.Persist.Sql (ConnectionPool, transactionUndo)
-import Database.Persist.Types (Filter)
-import Servant
+import           Database.Persist.Postgresql (Entity (..), deleteWhere,
+                                              fromSqlKey, insert, runSqlPool,
+                                              selectFirst, selectList, (==.))
+import           Database.Persist.Sql        (ConnectionPool, transactionUndo)
+import           Database.Persist.Types      (Filter)
+import           Servant
 
-import Api.User
-import Config (AppT(..), App, Config(..), Environment(..), makePool)
-import Models
-import qualified Data.Text as T
-import Control.Monad.Metrics (initialize)
+import           Api.User
+import           Config                      (App, AppT (..), Config (..),
+                                              Environment (..), makePool)
+import           Control.Monad.Metrics       (initialize)
+import qualified Data.Text                   as T
+import           Logger                      (mkLogEnv)
+import           Models
 
 runAppToIO :: Config -> App a -> IO a
 runAppToIO config app = do
@@ -36,8 +38,9 @@ setupTeardown :: (Config -> IO a) -> IO ()
 setupTeardown runTestsWith = do
     pool <- makePool Test
     metrics <- initialize
+    env <- mkLogEnv
     migrateDb pool
-    runTestsWith $ Config {getPool = pool, getEnv = Test, getMetrics = metrics}
+    runTestsWith $ Config {getPool = pool, getEnv = Test, getMetrics = metrics, getLogEnv = env}
     cleanDb pool
   where
     migrateDb :: ConnectionPool -> IO ()

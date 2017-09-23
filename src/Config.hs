@@ -1,12 +1,14 @@
+{-# LANGUAGE FlexibleInstances          #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE OverloadedStrings          #-}
-
 module Config where
 
 import           Control.Exception                    (throwIO)
+import           Control.Monad                        (liftM)
 import           Control.Monad.Except                 (ExceptT, MonadError)
 import           Control.Monad.Logger                 (runNoLoggingT,
                                                        runStdoutLoggingT)
+import           Control.Monad.Metrics
 import           Control.Monad.Reader                 (MonadIO, MonadReader,
                                                        ReaderT, ask)
 import           Control.Monad.Trans.Maybe            (MaybeT (..), runMaybeT)
@@ -19,8 +21,11 @@ import           Network.Wai                          (Middleware)
 import           Network.Wai.Middleware.RequestLogger (logStdout, logStdoutDev)
 import           Servant                              (ServantErr)
 import           System.Environment                   (lookupEnv)
-import           Control.Monad.Metrics
-import           Control.Monad                        (liftM)
+
+import           Control.Monad
+import           Control.Monad.IO.Class
+import           Control.Monad.Trans.Class
+import           Logger
 
 -- | This type represents the effects we want to have for our application.
 -- We wrap the standard Servant monad with 'ReaderT Config', which gives us
@@ -41,9 +46,10 @@ type App = AppT IO
 -- running in and a Persistent 'ConnectionPool'.
 data Config
     = Config
-    { getPool :: ConnectionPool
-    , getEnv  :: Environment
+    { getPool    :: ConnectionPool
+    , getEnv     :: Environment
     , getMetrics :: Metrics
+    , getLogEnv  :: LogEnv
     }
 
 instance Monad m => MonadMetrics (AppT m) where
@@ -69,10 +75,12 @@ setLogger Production = logStdout
 -- information from environment variables that are set by the keter
 -- deployment application.
 makePool :: Environment -> IO ConnectionPool
-makePool Test =
-    runNoLoggingT (createPostgresqlPool (connStr "-test") (envPool Test))
-makePool Development =
-    runStdoutLoggingT (createPostgresqlPool (connStr "") (envPool Development))
+makePool Test = do
+    env <- mkLogEnv
+    runKatipT env (createPostgresqlPool (connStr "-test") (envPool Test))
+makePool Development = do
+    env <- mkLogEnv
+    runKatipT env $ createPostgresqlPool (connStr "") (envPool Development)
 makePool Production = do
     -- This function makes heavy use of the 'MaybeT' monad transformer, which
     -- might be confusing if you're not familiar with it. It allows us to
@@ -96,7 +104,9 @@ makePool Production = do
                    ]
         envVars <- traverse (MaybeT . lookupEnv) envs
         let prodStr = BS.intercalate " " . zipWith (<>) keys $ BS.pack <$> envVars
-        runStdoutLoggingT $ createPostgresqlPool prodStr (envPool Production)
+        lift $ do
+            env <- mkLogEnv
+            runKatipT env $ createPostgresqlPool prodStr (envPool Production)
     case pool of
         -- If we don't have a correct database configuration, we can't
         -- handle that in the program, so we throw an IO exception. This is

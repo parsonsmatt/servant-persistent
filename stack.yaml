@@ -1,5 +1,4 @@
-flags:
-  servant-persistent: {}
+flags: {}
 packages:
 - '.'
 extra-deps:
