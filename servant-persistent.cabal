@@ -28,6 +28,9 @@ executable perservant
       , warp
       , monad-logger
       , safe
+      , monad-metrics
+      , wai-middleware-metrics
+      , microlens
     hs-source-dirs:
         app
     default-language:

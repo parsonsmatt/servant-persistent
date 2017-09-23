@@ -10,7 +10,9 @@ import           Config                      (Config (..), Environment (..),
                                               makePool, setLogger)
 import           Models                      (doMigrations)
 import           Safe                        (readMay)
-import           Control.Monad.Metrics       (initialize)
+import qualified Control.Monad.Metrics as M
+import           Network.Wai.Metrics
+import           Lens.Micro
 
 -- | The 'main' function gathers the required environment information and
 -- initializes the application.
@@ -19,12 +21,13 @@ main = do
     env  <- lookupSetting "ENV" Development
     port <- lookupSetting "PORT" 8081
     pool <- makePool env
-    metrics <- initialize
-    let cfg = Config { getPool = pool, getEnv = env, getMetrics = metrics }
+    metr <- M.initialize
+    waiMetrics <- registerWaiMetrics (metr ^. M.metricsStore)
+    let cfg = Config { getPool = pool, getEnv = env, getMetrics = metr }
         logger = setLogger env
     runSqlPool doMigrations pool
     generateJavaScript
-    run port $ logger $ app cfg
+    run port $ logger $ metrics waiMetrics $ app cfg
 
 -- | Looks up a setting in the environment, with a provided default, and
 -- 'read's that information into the inferred type.
