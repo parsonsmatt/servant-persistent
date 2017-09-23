@@ -4,34 +4,29 @@
 {-# LANGUAGE OverloadedStrings          #-}
 module Config where
 
-import           Control.Exception                    (throwIO)
-import           Control.Monad                        (liftM)
-import           Control.Monad.Except                 (ExceptT, MonadError)
-import           Control.Monad.Logger                 (MonadLogger (..),
-                                                       runNoLoggingT,
-                                                       runStdoutLoggingT,
-                                                       toLogStr)
+import           Control.Exception           (throwIO)
+import           Control.Monad               (liftM)
+import           Control.Monad.Except        (ExceptT, MonadError)
+import           Control.Monad.Logger        (MonadLogger (..), toLogStr)
 import           Control.Monad.Metrics
-import           Control.Monad.Reader                 (MonadIO, MonadReader,
-                                                       ReaderT, ask, asks)
-import           Control.Monad.Trans.Maybe            (MaybeT (..), runMaybeT)
-import qualified Data.ByteString.Char8                as BS
-import           Data.Monoid                          ((<>))
-import           Database.Persist.Postgresql          (ConnectionPool,
-                                                       ConnectionString,
-                                                       createPostgresqlPool)
-import           Network.Wai                          (Middleware)
-import           Network.Wai.Middleware.RequestLogger (logStdout, logStdoutDev)
-import           Servant                              (ServantErr)
-import           System.Environment                   (lookupEnv)
+import           Control.Monad.Reader        (MonadIO, MonadReader, ReaderT,
+                                              ask, asks)
+import           Control.Monad.Trans.Maybe   (MaybeT (..), runMaybeT)
+import qualified Data.ByteString.Char8       as BS
+import           Data.Monoid                 ((<>))
+import           Database.Persist.Postgresql (ConnectionPool, ConnectionString,
+                                              createPostgresqlPool)
+import           Network.Wai                 (Middleware)
+import           Servant                     (ServantErr)
+import           System.Environment          (lookupEnv)
 
 import           Control.Monad
 import           Control.Monad.IO.Class
 import           Control.Monad.Trans.Class
-import qualified Katip                                as K
-import           Logger                               (Katip (..), LogEnv,
-                                                       mkLogEnv, runKatipT)
-import           System.Log.FastLogger                (fromLogStr)
+import qualified Katip                       as K
+import           Logger                      (Katip (..), LogEnv, mkLogEnv,
+                                              runKatipT)
+import           System.Log.FastLogger       (fromLogStr)
 
 -- | This type represents the effects we want to have for our application.
 -- We wrap the standard Servant monad with 'ReaderT Config', which gives us
@@ -86,8 +81,8 @@ data Environment
 -- | This returns a 'Middleware' based on the environment that we're in.
 setLogger :: Environment -> Middleware
 setLogger Test = id
-setLogger Development = logStdoutDev
-setLogger Production = logStdout
+setLogger Development = id
+setLogger Production = id
 
 -- | This function creates a 'ConnectionPool' for the given environment.
 -- For 'Development' and 'Test' environments, we use a stock and highly
