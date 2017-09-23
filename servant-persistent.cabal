@@ -61,7 +61,9 @@ library
       , wai-extra
       , warp
       , text
-
+      , monad-metrics
+      , ekg
+      , wai-middleware-metrics
 
 test-suite servant-persistent-test
     type:

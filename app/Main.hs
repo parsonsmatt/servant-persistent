@@ -10,7 +10,7 @@ import           Config                      (Config (..), Environment (..),
                                               makePool, setLogger)
 import           Models                      (doMigrations)
 import           Safe                        (readMay)
-
+import           Control.Monad.Metrics       (initialize)
 
 -- | The 'main' function gathers the required environment information and
 -- initializes the application.
@@ -19,7 +19,8 @@ main = do
     env  <- lookupSetting "ENV" Development
     port <- lookupSetting "PORT" 8081
     pool <- makePool env
-    let cfg = Config { getPool = pool, getEnv = env }
+    metrics <- initialize
+    let cfg = Config { getPool = pool, getEnv = env, getMetrics = metrics }
         logger = setLogger env
     runSqlPool doMigrations pool
     generateJavaScript

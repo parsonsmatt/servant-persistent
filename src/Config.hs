@@ -19,6 +19,7 @@ import           Network.Wai                          (Middleware)
 import           Network.Wai.Middleware.RequestLogger (logStdout, logStdoutDev)
 import           Servant                              (ServantErr)
 import           System.Environment                   (lookupEnv)
+import           Control.Monad.Metrics
 
 -- | This type represents the effects we want to have for our application.
 -- We wrap the standard Servant monad with 'ReaderT Config', which gives us
@@ -41,6 +42,7 @@ data Config
     = Config
     { getPool :: ConnectionPool
     , getEnv  :: Environment
+    , getMetrics :: Metrics
     }
 
 -- | Right now, we're distinguishing between three environments. We could
