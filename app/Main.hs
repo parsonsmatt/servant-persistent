@@ -14,8 +14,8 @@ import           Safe                        (readMay)
 import qualified Control.Monad.Metrics as M
 import           Network.Wai.Metrics
 import           Lens.Micro
-import System.Metrics (newStore)
-import System.Remote.Monitoring (serverMetricStore, forkServer)
+import           System.Metrics              (newStore)
+import           System.Remote.Monitoring    (serverMetricStore, forkServer)
 
 -- | The 'main' function gathers the required environment information and
 -- initializes the application.

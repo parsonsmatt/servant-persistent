@@ -22,7 +22,7 @@ import           Data.Text (Text)
 import           Network.Wai.Metrics
 import           Lens.Micro
 import           Control.Monad.Metrics
-import Data.IORef
+import           Data.IORef
 import qualified Data.HashMap.Lazy as LH
 import qualified System.Metrics.Counter as C
 
@@ -65,10 +65,7 @@ waiMetrics :: MonadIO m => AppT m (LH.HashMap Text Int64)
 waiMetrics = do
     increment "metrics"
     metr <- M.getMetrics
-    liftIO $ snapshot =<< readIORef (metr ^. metricsCounters)
-
-snapshot :: LH.HashMap Text C.Counter -> IO (LH.HashMap Text Int64)
-snapshot = mapM C.read
+    liftIO $ mapM C.read =<< readIORef (metr ^. metricsCounters)
 
 -- | Generates JavaScript to query the User API.
 generateJavaScript :: IO ()
