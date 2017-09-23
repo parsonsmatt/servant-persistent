@@ -13,10 +13,9 @@ import           Database.Persist.Postgresql (Entity (..), fromSqlKey, insert,
 import           Network.Wai                 (Application)
 import           Servant
 
+import           Api.User
 import           Config                      (AppT (..), Config (..))
 import           Models
-
-import           Api.User
 
 -- | This is the function we export to run our 'UserAPI'. Given
 -- a 'Config', we return a WAI 'Application' which any WAI compliant server

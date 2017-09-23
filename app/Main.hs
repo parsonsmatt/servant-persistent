@@ -1,22 +1,21 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Main where
-
+import qualified Control.Monad.Metrics       as M
 import           Database.Persist.Postgresql (runSqlPool)
+import           Lens.Micro
 import           Network.Wai.Handler.Warp    (run)
+import           Network.Wai.Metrics
 import           System.Environment          (lookupEnv)
+import           System.Metrics              (newStore)
+import           System.Remote.Monitoring    (forkServer, serverMetricStore)
 
 import           Api                         (app)
 import           Api.User                    (generateJavaScript)
 import           Config                      (Config (..), Environment (..),
                                               makePool, setLogger)
-import qualified Control.Monad.Metrics       as M
-import           Lens.Micro
 import           Logger                      (mkLogEnv)
 import           Models                      (doMigrations)
-import           Network.Wai.Metrics
 import           Safe                        (readMay)
-import           System.Metrics              (newStore)
-import           System.Remote.Monitoring    (forkServer, serverMetricStore)
 
 -- | The 'main' function gathers the required environment information and
 -- initializes the application.

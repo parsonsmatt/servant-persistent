@@ -14,15 +14,13 @@ import           Control.Monad.Reader        (MonadIO, MonadReader, ReaderT,
                                               ask, asks)
 import           Control.Monad.Trans.Class
 import           Control.Monad.Trans.Maybe   (MaybeT (..), runMaybeT)
-import           System.Environment          (lookupEnv)
-
 import qualified Data.ByteString.Char8       as BS
 import           Data.Monoid                 ((<>))
-
 import           Database.Persist.Postgresql (ConnectionPool, ConnectionString,
                                               createPostgresqlPool)
 import           Network.Wai                 (Middleware)
 import           Servant                     (ServantErr)
+import           System.Environment          (lookupEnv)
 
 import           Logger
 
@@ -76,9 +74,9 @@ data Environment
 
 -- | This returns a 'Middleware' based on the environment that we're in.
 setLogger :: Environment -> LogEnv -> Middleware
-setLogger Test _ = id
+setLogger Test _          = id
 setLogger Development env = katipLogger env
-setLogger Production env = katipLogger env
+setLogger Production env  = katipLogger env
 
 -- | Web request logger (currently unimplemented). For inspiration see
 -- ApacheLogger from wai-logger package.
@@ -136,9 +134,9 @@ makePool Production = do
 
 -- | The number of pools to use for a given environment.
 envPool :: Environment -> Int
-envPool Test = 1
+envPool Test        = 1
 envPool Development = 1
-envPool Production = 8
+envPool Production  = 8
 
 -- | A basic 'ConnectionString' for local/test development. Pass in either
 -- @""@ for 'Development' or @"test"@ for 'Test'.

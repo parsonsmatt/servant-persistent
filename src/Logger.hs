@@ -14,13 +14,11 @@ import           Control.Exception
 import           Control.Monad
 import           Control.Monad.IO.Class
 import           Control.Monad.Logger       as ML
-
+import           Katip                      as K
 import           System.IO                  (stdout)
+import           System.Log.FastLogger      (fromLogStr)
 import           System.Log.FastLogger.Date (FormattedTime, newTimeCache,
                                              simpleTimeFormat)
-
-import           Katip                      as K
-import           System.Log.FastLogger      (fromLogStr)
 
 mkLogEnv :: IO LogEnv
 mkLogEnv = do
@@ -28,10 +26,10 @@ mkLogEnv = do
     registerScribe "stdout" handleScribe <$> initLogEnv "servant-persistent" "production"
 
 fromLevel :: LogLevel -> Severity
-fromLevel LevelDebug = DebugS
-fromLevel LevelInfo  = InfoS
-fromLevel LevelWarn  = WarningS
-fromLevel LevelError = ErrorS
+fromLevel LevelDebug     = DebugS
+fromLevel LevelInfo      = InfoS
+fromLevel LevelWarn      = WarningS
+fromLevel LevelError     = ErrorS
 fromLevel (LevelOther _) = NoticeS
 
 adapt :: (ToLogStr msg, Applicative m, Katip m)  =>

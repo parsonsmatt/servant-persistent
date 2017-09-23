@@ -11,22 +11,21 @@ import           Control.Monad.Metrics
 import qualified Control.Monad.Metrics       as M
 import           Control.Monad.Reader        (ReaderT, runReaderT)
 import           Control.Monad.Reader.Class
-import           Data.Int                    (Int64)
-import           Database.Persist.Postgresql (Entity (..), fromSqlKey, insert,
-                                              selectFirst, selectList, (==.))
-import           Network.Wai                 (Application)
-import           Servant
-import           Servant.JS                  (vanillaJS, writeJSForAPI)
-
-import           Config                      (AppT (..), Config (..))
-
 import qualified Data.HashMap.Lazy           as LH
+import           Data.Int                    (Int64)
 import           Data.IORef
 import           Data.Text                   (Text)
+import           Database.Persist.Postgresql (Entity (..), fromSqlKey, insert,
+                                              selectFirst, selectList, (==.))
 import           Lens.Micro
-import           Models
+import           Network.Wai                 (Application)
 import           Network.Wai.Metrics
+import           Servant
+import           Servant.JS                  (vanillaJS, writeJSForAPI)
 import qualified System.Metrics.Counter      as C
+
+import           Config                      (AppT (..), Config (..))
+import           Models
 
 type UserAPI =
          "users" :> Get '[JSON] [Entity User]
