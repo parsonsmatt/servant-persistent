@@ -9,13 +9,14 @@ import           Api                         (app)
 import           Api.User                    (generateJavaScript)
 import           Config                      (Config (..), Environment (..),
                                               makePool, setLogger)
-import           Models                      (doMigrations)
-import           Safe                        (readMay)
-import qualified Control.Monad.Metrics as M
-import           Network.Wai.Metrics
+import qualified Control.Monad.Metrics       as M
 import           Lens.Micro
+import           Logger
+import           Models                      (doMigrations)
+import           Network.Wai.Metrics
+import           Safe                        (readMay)
 import           System.Metrics              (newStore)
-import           System.Remote.Monitoring    (serverMetricStore, forkServer)
+import           System.Remote.Monitoring    (forkServer, serverMetricStore)
 
 -- | The 'main' function gathers the required environment information and
 -- initializes the application.
@@ -27,7 +28,8 @@ main = do
     store <- serverMetricStore <$> forkServer "localhost" 8000
     waiMetrics <- registerWaiMetrics store
     metr <- M.initializeWith store
-    let cfg = Config { getPool = pool, getEnv = env, getMetrics = metr }
+    logEnv <- mkLogEnv
+    let cfg = Config {getPool = pool, getEnv = env, getMetrics = metr, getLogEnv = logEnv}
         logger = setLogger env
     runSqlPool doMigrations pool
     generateJavaScript
