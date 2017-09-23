@@ -1,16 +1,19 @@
 {-# LANGUAGE FlexibleInstances          #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE MultiParamTypeClasses      #-}
 {-# LANGUAGE OverloadedStrings          #-}
 module Config where
 
 import           Control.Exception                    (throwIO)
 import           Control.Monad                        (liftM)
 import           Control.Monad.Except                 (ExceptT, MonadError)
-import           Control.Monad.Logger                 (runNoLoggingT,
-                                                       runStdoutLoggingT)
+import           Control.Monad.Logger                 (MonadLogger (..),
+                                                       runNoLoggingT,
+                                                       runStdoutLoggingT,
+                                                       toLogStr)
 import           Control.Monad.Metrics
 import           Control.Monad.Reader                 (MonadIO, MonadReader,
-                                                       ReaderT, ask)
+                                                       ReaderT, ask, asks)
 import           Control.Monad.Trans.Maybe            (MaybeT (..), runMaybeT)
 import qualified Data.ByteString.Char8                as BS
 import           Data.Monoid                          ((<>))
@@ -25,7 +28,10 @@ import           System.Environment                   (lookupEnv)
 import           Control.Monad
 import           Control.Monad.IO.Class
 import           Control.Monad.Trans.Class
-import           Logger
+import qualified Katip                                as K
+import           Logger                               (Katip (..), LogEnv,
+                                                       mkLogEnv, runKatipT)
+import           System.Log.FastLogger                (fromLogStr)
 
 -- | This type represents the effects we want to have for our application.
 -- We wrap the standard Servant monad with 'ReaderT Config', which gives us
@@ -46,14 +52,28 @@ type App = AppT IO
 -- running in and a Persistent 'ConnectionPool'.
 data Config
     = Config
-    { getPool    :: ConnectionPool
-    , getEnv     :: Environment
-    , getMetrics :: Metrics
-    , getLogEnv  :: LogEnv
+    { getPool      :: ConnectionPool
+    , getEnv       :: Environment
+    , getMetrics   :: Metrics
+    , configLogEnv :: LogEnv
     }
 
 instance Monad m => MonadMetrics (AppT m) where
-    getMetrics = liftM Config.getMetrics ask
+    getMetrics = asks Config.getMetrics
+
+-- | Katip instance for @AppT m@
+instance MonadIO m => Katip (AppT m) where
+    getLogEnv = asks configLogEnv
+
+-- | MonadLogger instance to use within @AppT m@
+instance MonadIO m => MonadLogger (AppT m) where
+    monadLoggerLog loc src lvl msg =
+        K.logMsg "ns-std" K.InfoS $ K.logStr (fromLogStr $ toLogStr msg)
+
+-- | MonadLogger instance to use in @makePool@
+instance MonadIO m => MonadLogger (K.KatipT m) where
+    monadLoggerLog loc src lvl msg =
+        K.logMsg "ns-std" K.InfoS $ K.logStr (fromLogStr $ toLogStr msg)
 
 -- | Right now, we're distinguishing between three environments. We could
 -- also add a @Staging@ environment if we needed to.

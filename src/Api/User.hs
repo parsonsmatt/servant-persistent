@@ -1,14 +1,16 @@
-{-# LANGUAGE OverloadedStrings          #-}
 {-# LANGUAGE DataKinds                  #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE OverloadedStrings          #-}
 {-# LANGUAGE TypeOperators              #-}
 
 module Api.User where
 
 import           Control.Monad.Except
+import           Control.Monad.Logger
+import           Control.Monad.Metrics
+import qualified Control.Monad.Metrics       as M
 import           Control.Monad.Reader        (ReaderT, runReaderT)
 import           Control.Monad.Reader.Class
-import qualified Control.Monad.Metrics as M
 import           Data.Int                    (Int64)
 import           Database.Persist.Postgresql (Entity (..), fromSqlKey, insert,
                                               selectFirst, selectList, (==.))
@@ -17,14 +19,14 @@ import           Servant
 import           Servant.JS                  (vanillaJS, writeJSForAPI)
 
 import           Config                      (AppT (..), Config (..))
-import           Models
-import           Data.Text (Text)
-import           Network.Wai.Metrics
-import           Lens.Micro
-import           Control.Monad.Metrics
+
+import qualified Data.HashMap.Lazy           as LH
 import           Data.IORef
-import qualified Data.HashMap.Lazy as LH
-import qualified System.Metrics.Counter as C
+import           Data.Text                   (Text)
+import           Lens.Micro
+import           Models
+import           Network.Wai.Metrics
+import qualified System.Metrics.Counter      as C
 
 type UserAPI =
          "users" :> Get '[JSON] [Entity User]
@@ -40,12 +42,14 @@ userServer = allUsers :<|> singleUser :<|> createUser :<|> waiMetrics
 allUsers :: MonadIO m => AppT m [Entity User]
 allUsers = do
     increment "allUsers"
+    logDebugNS "allUsers" "allUsers"
     runDb (selectList [] [])
 
 -- | Returns a user by name or throws a 404 error.
 singleUser :: MonadIO m => Text -> AppT m (Entity User)
 singleUser str = do
     increment "singleUser"
+    logDebugNS "singleUser" "singleUser"
     maybeUser <- runDb (selectFirst [UserName ==. str] [])
     case maybeUser of
          Nothing ->
@@ -57,6 +61,7 @@ singleUser str = do
 createUser :: MonadIO m => User -> AppT m Int64
 createUser p = do
     increment "createUser"
+    logDebugNS "createUser" "creating a user"
     newUser <- runDb (insert (User (userName p) (userEmail p)))
     return $ fromSqlKey newUser
 
@@ -64,6 +69,7 @@ createUser p = do
 waiMetrics :: MonadIO m => AppT m (LH.HashMap Text Int64)
 waiMetrics = do
     increment "metrics"
+    logDebugNS "metrics" "metrics"
     metr <- M.getMetrics
     liftIO $ mapM C.read =<< readIORef (metr ^. metricsCounters)
 

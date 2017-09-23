@@ -11,7 +11,7 @@ import           Config                      (Config (..), Environment (..),
                                               makePool, setLogger)
 import qualified Control.Monad.Metrics       as M
 import           Lens.Micro
-import           Logger
+import           Logger                      (mkLogEnv)
 import           Models                      (doMigrations)
 import           Network.Wai.Metrics
 import           Safe                        (readMay)
@@ -29,7 +29,7 @@ main = do
     waiMetrics <- registerWaiMetrics store
     metr <- M.initializeWith store
     logEnv <- mkLogEnv
-    let cfg = Config {getPool = pool, getEnv = env, getMetrics = metr, getLogEnv = logEnv}
+    let cfg = Config {getPool = pool, getEnv = env, getMetrics = metr, configLogEnv = logEnv}
         logger = setLogger env
     runSqlPool doMigrations pool
     generateJavaScript
