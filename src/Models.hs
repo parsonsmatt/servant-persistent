@@ -13,14 +13,14 @@
 
 module Models where
 
-import           Control.Monad.Reader
+import           Control.Monad.Reader (MonadIO, MonadReader, asks, liftIO)
 import           Data.Aeson           (FromJSON, ToJSON)
-import           Database.Persist.Sql
+import           Database.Persist.Sql (SqlPersistT, runMigration, runSqlPool)
 import           Database.Persist.TH  (mkMigrate, mkPersist, persistLowerCase,
                                        share, sqlSettings)
 import           GHC.Generics         (Generic)
 
-import           Config
+import           Config               (Config, getPool)
 import           Data.Text            (Text)
 
 share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|

@@ -5,9 +5,8 @@
 
 module Api.User where
 
-import           Control.Monad.Except
+import           Control.Monad.Except        (MonadIO, liftIO)
 import           Control.Monad.Reader        (ReaderT, runReaderT)
-import           Control.Monad.Reader.Class
 import qualified Control.Monad.Metrics as M
 import           Data.Int                    (Int64)
 import           Database.Persist.Postgresql (Entity (..), fromSqlKey, insert,
@@ -17,12 +16,12 @@ import           Servant
 import           Servant.JS                  (vanillaJS, writeJSForAPI)
 
 import           Config                      (AppT (..), Config (..))
-import           Models
-import           Data.Text (Text)
-import           Network.Wai.Metrics
-import           Lens.Micro
-import           Control.Monad.Metrics
-import           Data.IORef
+import           Models                      (User(User), runDb, userEmail, userName)
+import qualified Models as M
+import           Data.Text                   (Text)
+import           Lens.Micro                  ((^.))
+import           Control.Monad.Metrics       (increment, metricsCounters)
+import           Data.IORef                  (readIORef)
 import qualified Data.HashMap.Lazy as LH
 import qualified System.Metrics.Counter as C
 
@@ -46,7 +45,7 @@ allUsers = do
 singleUser :: MonadIO m => Text -> AppT m (Entity User)
 singleUser str = do
     increment "singleUser"
-    maybeUser <- runDb (selectFirst [UserName ==. str] [])
+    maybeUser <- runDb (selectFirst [M.UserName ==. str] [])
     case maybeUser of
          Nothing ->
             throwError err404
