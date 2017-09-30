@@ -17,7 +17,7 @@ import           Servant.JS                  (vanillaJS, writeJSForAPI)
 
 import           Config                      (AppT (..), Config (..))
 import           Models                      (User(User), runDb, userEmail, userName)
-import qualified Models as M
+import qualified Models as Md
 import           Data.Text                   (Text)
 import           Lens.Micro                  ((^.))
 import           Control.Monad.Metrics       (increment, metricsCounters)
@@ -45,7 +45,7 @@ allUsers = do
 singleUser :: MonadIO m => Text -> AppT m (Entity User)
 singleUser str = do
     increment "singleUser"
-    maybeUser <- runDb (selectFirst [M.UserName ==. str] [])
+    maybeUser <- runDb (selectFirst [Md.UserName ==. str] [])
     case maybeUser of
          Nothing ->
             throwError err404
