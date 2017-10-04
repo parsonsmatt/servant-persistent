@@ -14,7 +14,7 @@ import           Api                         (app)
 import           Api.User                    (generateJavaScript)
 import           Config                      (Config (..), Environment (..),
                                               makePool, setLogger)
-import           Logger                      (mkLogEnv)
+import           Logger                      (defaultLogEnv)
 import           Models                      (doMigrations)
 import           Safe                        (readMay)
 
@@ -24,7 +24,7 @@ main :: IO ()
 main = do
     env  <- lookupSetting "ENV" Development
     port <- lookupSetting "PORT" 8081
-    logEnv <- mkLogEnv
+    logEnv <- defaultLogEnv
     pool <- makePool env logEnv
     store <- serverMetricStore <$> forkServer "localhost" 8000
     waiMetrics <- registerWaiMetrics store

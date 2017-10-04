@@ -24,7 +24,7 @@ import           Config                      (App, AppT (..), Config (..),
                                               Environment (..), makePool)
 import           Control.Monad.Metrics       (initialize)
 import qualified Data.Text                   as T
-import           Logger                      (mkLogEnv)
+import           Logger                      (defaultLogEnv)
 import           Models
 
 runAppToIO :: Config -> App a -> IO a
@@ -36,7 +36,7 @@ runAppToIO config app = do
 
 setupTeardown :: (Config -> IO a) -> IO ()
 setupTeardown runTestsWith = do
-    env <- mkLogEnv
+    env <- defaultLogEnv
     pool <- makePool Test env
     metrics <- initialize
     migrateDb pool
