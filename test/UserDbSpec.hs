@@ -32,7 +32,7 @@ runAppToIO config app = do
     result <- runExceptT $ runReaderT (runApp app) config
     case result of
         Left err -> throwIO err
-        Right a -> return a
+        Right a  -> return a
 
 setupTeardown :: (Config -> IO a) -> IO ()
 setupTeardown runTestsWith = do
@@ -40,7 +40,10 @@ setupTeardown runTestsWith = do
     metrics <- initialize
     env <- mkLogEnv
     migrateDb pool
-    runTestsWith $ Config {getPool = pool, getEnv = Test, getMetrics = metrics, configLogEnv = env}
+    runTestsWith $ Config { configPool = pool
+                          , configEnv = Test
+                          , configMetrics = metrics
+                          , configLogEnv = env }
     cleanDb pool
   where
     migrateDb :: ConnectionPool -> IO ()

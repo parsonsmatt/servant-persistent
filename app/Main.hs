@@ -29,7 +29,10 @@ main = do
     waiMetrics <- registerWaiMetrics store
     metr <- M.initializeWith store
     logEnv <- mkLogEnv
-    let cfg = Config {getPool = pool, getEnv = env, getMetrics = metr, configLogEnv = logEnv}
+    let cfg = Config { configPool = pool
+                     , configEnv = env
+                     , configMetrics = metr
+                     , configLogEnv = logEnv }
         logger = setLogger env logEnv
     runSqlPool doMigrations pool
     generateJavaScript

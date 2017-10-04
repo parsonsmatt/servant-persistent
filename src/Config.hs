@@ -43,14 +43,14 @@ type App = AppT IO
 -- running in and a Persistent 'ConnectionPool'.
 data Config
     = Config
-    { getPool      :: ConnectionPool
-    , getEnv       :: Environment
-    , getMetrics   :: Metrics
-    , configLogEnv :: LogEnv
+    { configPool    :: ConnectionPool
+    , configEnv     :: Environment
+    , configMetrics :: Metrics
+    , configLogEnv  :: LogEnv
     }
 
 instance Monad m => MonadMetrics (AppT m) where
-    getMetrics = asks Config.getMetrics
+    getMetrics = asks Config.configMetrics
 
 -- | Katip instance for @AppT m@
 instance MonadIO m => Katip (AppT m) where
