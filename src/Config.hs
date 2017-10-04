@@ -5,12 +5,12 @@
 module Config where
 
 import           Control.Exception                    (throwIO)
-import           Control.Monad
 import           Control.Monad.Except                 (ExceptT, MonadError)
 import           Control.Monad.IO.Class
 import           Control.Monad.Logger                 (MonadLogger (..),
                                                        toLogStr)
-import           Control.Monad.Metrics
+import           Control.Monad.Metrics                (Metrics, MonadMetrics,
+                                                       getMetrics)
 import           Control.Monad.Reader                 (MonadIO, MonadReader,
                                                        ReaderT, ask, asks)
 import           Control.Monad.Trans.Class

@@ -6,16 +6,17 @@ module Api (app) where
 
 import           Control.Monad.Except
 import           Control.Monad.Reader        (ReaderT, runReaderT)
-import           Control.Monad.Reader.Class
 import           Data.Int                    (Int64)
 import           Database.Persist.Postgresql (Entity (..), fromSqlKey, insert,
                                               selectFirst, selectList, (==.))
 import           Network.Wai                 (Application)
-import           Servant
+import           Servant                     ((:<|>) ((:<|>)), (:~>) (Nat),
+                                              Proxy (Proxy), Raw, ServantErr,
+                                              Server, enter, serve,
+                                              serveDirectory)
 
-import           Api.User
+import           Api.User                    (UserAPI, userServer)
 import           Config                      (AppT (..), Config (..))
-import           Models
 
 -- | This is the function we export to run our 'UserAPI'. Given
 -- a 'Config', we return a WAI 'Application' which any WAI compliant server

@@ -5,13 +5,10 @@
 
 module Api.User where
 
-import           Control.Monad.Except
-import           Control.Monad.Logger
-import           Control.Monad.Metrics
+import           Control.Monad.Except        (MonadIO, liftIO)
+import           Control.Monad.Logger        (logDebugNS)
 import qualified Control.Monad.Metrics       as M
 import           Control.Monad.Reader        (ReaderT, runReaderT)
-import           Control.Monad.Reader.Class
-import qualified Data.HashMap.Lazy           as LH
 import           Data.Int                    (Int64)
 import           Data.IORef
 import           Data.Text                   (Text)
@@ -25,7 +22,17 @@ import           Servant.JS                  (vanillaJS, writeJSForAPI)
 import qualified System.Metrics.Counter      as C
 
 import           Config                      (AppT (..), Config (..))
-import           Models
+import           Control.Monad.Metrics       (increment, metricsCounters)
+import qualified Data.HashMap.Lazy           as LH
+import           Data.IORef                  (readIORef)
+import           Data.Text                   (Text)
+import           Lens.Micro                  ((^.))
+import           Models                      (User (User), runDb, userEmail,
+                                              userName)
+import qualified Models                      as Md
+import qualified System.Metrics.Counter      as C
+
+
 
 type UserAPI =
          "users" :> Get '[JSON] [Entity User]
@@ -49,7 +56,7 @@ singleUser :: MonadIO m => Text -> AppT m (Entity User)
 singleUser str = do
     increment "singleUser"
     logDebugNS "web" "singleUser"
-    maybeUser <- runDb (selectFirst [UserName ==. str] [])
+    maybeUser <- runDb (selectFirst [Md.UserName ==. str] [])
     case maybeUser of
          Nothing ->
             throwError err404
