@@ -41,4 +41,5 @@ adapt f _ src lvl msg =
     f ns (fromLevel lvl) $ logStr' msg
   where
     ns = Namespace [src]
+    -- not sure how fast this is going to be
     logStr' = Katip.logStr . FastLogger.fromLogStr . Logger.toLogStr
