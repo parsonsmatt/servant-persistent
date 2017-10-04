@@ -8,7 +8,7 @@ module Logger
     , Katip(..)
     , LogEnv
     , Severity(..)
-) where
+    ) where
 
 import           Control.Exception
 import           Control.Monad

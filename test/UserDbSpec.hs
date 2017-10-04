@@ -36,9 +36,9 @@ runAppToIO config app = do
 
 setupTeardown :: (Config -> IO a) -> IO ()
 setupTeardown runTestsWith = do
-    pool <- makePool Test
-    metrics <- initialize
     env <- mkLogEnv
+    pool <- makePool Test env
+    metrics <- initialize
     migrateDb pool
     runTestsWith $ Config { configPool = pool
                           , configEnv = Test

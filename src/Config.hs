@@ -4,23 +4,26 @@
 {-# LANGUAGE OverloadedStrings          #-}
 module Config where
 
-import           Control.Exception           (throwIO)
+import           Control.Exception                    (throwIO)
 import           Control.Monad
-import           Control.Monad.Except        (ExceptT, MonadError)
+import           Control.Monad.Except                 (ExceptT, MonadError)
 import           Control.Monad.IO.Class
-import           Control.Monad.Logger        (MonadLogger (..), toLogStr)
+import           Control.Monad.Logger                 (MonadLogger (..),
+                                                       toLogStr)
 import           Control.Monad.Metrics
-import           Control.Monad.Reader        (MonadIO, MonadReader, ReaderT,
-                                              ask, asks)
+import           Control.Monad.Reader                 (MonadIO, MonadReader,
+                                                       ReaderT, ask, asks)
 import           Control.Monad.Trans.Class
-import           Control.Monad.Trans.Maybe   (MaybeT (..), runMaybeT)
-import qualified Data.ByteString.Char8       as BS
-import           Data.Monoid                 ((<>))
-import           Database.Persist.Postgresql (ConnectionPool, ConnectionString,
-                                              createPostgresqlPool)
-import           Network.Wai                 (Middleware)
-import           Servant                     (ServantErr)
-import           System.Environment          (lookupEnv)
+import           Control.Monad.Trans.Maybe            (MaybeT (..), runMaybeT)
+import qualified Data.ByteString.Char8                as BS
+import           Data.Monoid                          ((<>))
+import           Database.Persist.Postgresql          (ConnectionPool,
+                                                       ConnectionString,
+                                                       createPostgresqlPool)
+import           Network.Wai                          (Middleware)
+import           Network.Wai.Middleware.RequestLogger (logStdout, logStdoutDev)
+import           Servant                              (ServantErr)
+import           System.Environment                   (lookupEnv)
 
 import           Logger
 
@@ -73,13 +76,13 @@ data Environment
     deriving (Eq, Show, Read)
 
 -- | This returns a 'Middleware' based on the environment that we're in.
-setLogger :: Environment -> LogEnv -> Middleware
-setLogger Test _          = id
-setLogger Development env = katipLogger env
-setLogger Production env  = katipLogger env
+setLogger :: Environment -> Middleware
+setLogger Test        = id
+setLogger Development = logStdoutDev
+setLogger Production  = logStdout
 
--- | Web request logger (currently unimplemented). For inspiration see
--- ApacheLogger from wai-logger package.
+-- | Web request logger (currently unimplemented and unused). For inspiration
+-- see ApacheLogger from wai-logger package.
 katipLogger :: LogEnv -> Middleware
 katipLogger env app req respond = runKatipT env $ do
     -- todo: log proper request data
@@ -91,14 +94,12 @@ katipLogger env app req respond = runKatipT env $ do
 -- insecure connection string. The 'Production' environment acquires the
 -- information from environment variables that are set by the keter
 -- deployment application.
-makePool :: Environment -> IO ConnectionPool
-makePool Test = do
-    env <- mkLogEnv
+makePool :: Environment -> LogEnv -> IO ConnectionPool
+makePool Test env =
     runKatipT env (createPostgresqlPool (connStr "-test") (envPool Test))
-makePool Development = do
-    env <- mkLogEnv
+makePool Development env =
     runKatipT env $ createPostgresqlPool (connStr "") (envPool Development)
-makePool Production = do
+makePool Production env = do
     -- This function makes heavy use of the 'MaybeT' monad transformer, which
     -- might be confusing if you're not familiar with it. It allows us to
     -- combine the effects from 'IO' and the effect of 'Maybe' into a single
@@ -121,9 +122,7 @@ makePool Production = do
                    ]
         envVars <- traverse (MaybeT . lookupEnv) envs
         let prodStr = BS.intercalate " " . zipWith (<>) keys $ BS.pack <$> envVars
-        lift $ do
-            env <- mkLogEnv
-            runKatipT env $ createPostgresqlPool prodStr (envPool Production)
+        lift $ runKatipT env $ createPostgresqlPool prodStr (envPool Production)
     case pool of
         -- If we don't have a correct database configuration, we can't
         -- handle that in the program, so we throw an IO exception. This is

@@ -24,16 +24,16 @@ main :: IO ()
 main = do
     env  <- lookupSetting "ENV" Development
     port <- lookupSetting "PORT" 8081
-    pool <- makePool env
+    logEnv <- mkLogEnv
+    pool <- makePool env logEnv
     store <- serverMetricStore <$> forkServer "localhost" 8000
     waiMetrics <- registerWaiMetrics store
     metr <- M.initializeWith store
-    logEnv <- mkLogEnv
     let cfg = Config { configPool = pool
                      , configEnv = env
                      , configMetrics = metr
                      , configLogEnv = logEnv }
-        logger = setLogger env logEnv
+        logger = setLogger env
     runSqlPool doMigrations pool
     generateJavaScript
     run port $ logger $ metrics waiMetrics $ app cfg
