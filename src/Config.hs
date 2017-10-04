@@ -19,7 +19,7 @@ import           Network.Wai                          (Middleware)
 import           Network.Wai.Middleware.RequestLogger (logStdout, logStdoutDev)
 import           Servant                              (ServantErr)
 import           System.Environment                   (lookupEnv)
-import           Control.Monad.Metrics
+import           Control.Monad.Metrics                (Metrics, MonadMetrics, getMetrics)
 import           Control.Monad                        (liftM)
 
 -- | This type represents the effects we want to have for our application.
