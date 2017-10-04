@@ -1,13 +1,13 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Logger (
-    mkLogEnv,
-    runKatipT,
-    KatipT(..),
-    Katip(..),
-    LogEnv,
-    logMsg,
-    Severity(..),
-    adapt
+module Logger
+    ( adapt
+    , logMsg
+    , mkLogEnv
+    , runKatipT
+    , KatipT(..)
+    , Katip(..)
+    , LogEnv
+    , Severity(..)
 ) where
 
 import           Control.Exception

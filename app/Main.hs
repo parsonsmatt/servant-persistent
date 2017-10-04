@@ -1,5 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Main where
+
 import qualified Control.Monad.Metrics       as M
 import           Database.Persist.Postgresql (runSqlPool)
 import           Lens.Micro
