@@ -48,6 +48,7 @@ library
       , Models
       , Api
       , Api.User
+      , Logger
     build-depends:
         base >= 4.7 && < 4.9
       , aeson
@@ -72,6 +73,8 @@ library
       , microlens
       , unordered-containers
       , ekg-core
+      , katip
+      , fast-logger
 
 test-suite servant-persistent-test
     type:

@@ -1,29 +1,38 @@
-{-# LANGUAGE OverloadedStrings          #-}
 {-# LANGUAGE DataKinds                  #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE OverloadedStrings          #-}
 {-# LANGUAGE TypeOperators              #-}
 
 module Api.User where
 
 import           Control.Monad.Except        (MonadIO, liftIO)
+import           Control.Monad.Logger        (logDebugNS)
+import qualified Control.Monad.Metrics       as M
 import           Control.Monad.Reader        (ReaderT, runReaderT)
-import qualified Control.Monad.Metrics as M
 import           Data.Int                    (Int64)
+import           Data.IORef
+import           Data.Text                   (Text)
 import           Database.Persist.Postgresql (Entity (..), fromSqlKey, insert,
                                               selectFirst, selectList, (==.))
+import           Lens.Micro
 import           Network.Wai                 (Application)
+import           Network.Wai.Metrics
 import           Servant
 import           Servant.JS                  (vanillaJS, writeJSForAPI)
+import qualified System.Metrics.Counter      as C
 
 import           Config                      (AppT (..), Config (..))
-import           Models                      (User(User), runDb, userEmail, userName)
-import qualified Models as Md
+import           Control.Monad.Metrics       (increment, metricsCounters)
+import qualified Data.HashMap.Lazy           as LH
+import           Data.IORef                  (readIORef)
 import           Data.Text                   (Text)
 import           Lens.Micro                  ((^.))
-import           Control.Monad.Metrics       (increment, metricsCounters)
-import           Data.IORef                  (readIORef)
-import qualified Data.HashMap.Lazy as LH
-import qualified System.Metrics.Counter as C
+import           Models                      (User (User), runDb, userEmail,
+                                              userName)
+import qualified Models                      as Md
+import qualified System.Metrics.Counter      as C
+
+
 
 type UserAPI =
          "users" :> Get '[JSON] [Entity User]
@@ -39,12 +48,14 @@ userServer = allUsers :<|> singleUser :<|> createUser :<|> waiMetrics
 allUsers :: MonadIO m => AppT m [Entity User]
 allUsers = do
     increment "allUsers"
+    logDebugNS "web" "allUsers"
     runDb (selectList [] [])
 
 -- | Returns a user by name or throws a 404 error.
 singleUser :: MonadIO m => Text -> AppT m (Entity User)
 singleUser str = do
     increment "singleUser"
+    logDebugNS "web" "singleUser"
     maybeUser <- runDb (selectFirst [Md.UserName ==. str] [])
     case maybeUser of
          Nothing ->
@@ -56,6 +67,7 @@ singleUser str = do
 createUser :: MonadIO m => User -> AppT m Int64
 createUser p = do
     increment "createUser"
+    logDebugNS "web" "creating a user"
     newUser <- runDb (insert (User (userName p) (userEmail p)))
     return $ fromSqlKey newUser
 
@@ -63,6 +75,7 @@ createUser p = do
 waiMetrics :: MonadIO m => AppT m (LH.HashMap Text Int64)
 waiMetrics = do
     increment "metrics"
+    logDebugNS "web" "metrics"
     metr <- M.getMetrics
     liftIO $ mapM C.read =<< readIORef (metr ^. metricsCounters)
 

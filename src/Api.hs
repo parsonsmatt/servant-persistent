@@ -10,12 +10,13 @@ import           Data.Int                    (Int64)
 import           Database.Persist.Postgresql (Entity (..), fromSqlKey, insert,
                                               selectFirst, selectList, (==.))
 import           Network.Wai                 (Application)
-import           Servant                     ((:<|>)((:<|>)), (:~>)(Nat), Proxy(Proxy)
-                                             , Raw, Server
-                                             , ServantErr, enter, serve, serveDirectory)
+import           Servant                     ((:<|>) ((:<|>)), (:~>) (Nat),
+                                              Proxy (Proxy), Raw, ServantErr,
+                                              Server, enter, serve,
+                                              serveDirectory)
 
-import           Config                      (AppT (..), Config (..))
 import           Api.User                    (UserAPI, userServer)
+import           Config                      (AppT (..), Config (..))
 
 -- | This is the function we export to run our 'UserAPI'. Given
 -- a 'Config', we return a WAI 'Application' which any WAI compliant server
