@@ -23,7 +23,8 @@ import qualified System.Log.FastLogger  as FastLogger
 defaultLogEnv :: IO LogEnv
 defaultLogEnv = do
     handleScribe <- mkHandleScribe ColorIfTerminal IO.stdout DebugS V2
-    registerScribe "stdout" handleScribe <$> initLogEnv "servant-persistent" "production"
+    env <- initLogEnv "servant-persistent" "production"
+    registerScribe "stdout" handleScribe defaultScribeSettings env
 
 fromLevel :: LogLevel -> Severity
 fromLevel LevelDebug     = DebugS
