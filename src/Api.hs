@@ -1,6 +1,5 @@
-{-# LANGUAGE DataKinds                  #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE TypeOperators              #-}
+{-# LANGUAGE DataKinds     #-}
+{-# LANGUAGE TypeOperators #-}
 
 module Api (app) where
 
@@ -10,13 +9,15 @@ import           Data.Int                    (Int64)
 import           Database.Persist.Postgresql (Entity (..), fromSqlKey, insert,
                                               selectFirst, selectList, (==.))
 import           Network.Wai                 (Application)
-import           Servant                     ((:<|>) ((:<|>)), (:~>) (Nat),
+import           Servant                     ((:<|>) ((:<|>)), (:~>) (NT),
                                               Proxy (Proxy), Raw, ServantErr,
                                               Server, enter, serve,
-                                              serveDirectory)
+                                              serveDirectoryWebApp)
+import           Servant.Server
 
 import           Api.User                    (UserAPI, userServer)
 import           Config                      (AppT (..), Config (..))
+import           Control.Category            ((>>>))
 
 -- | This is the function we export to run our 'UserAPI'. Given
 -- a 'Config', we return a WAI 'Application' which any WAI compliant server
@@ -25,9 +26,10 @@ userApp :: Config -> Application
 userApp cfg = serve (Proxy :: Proxy UserAPI) (appToServer cfg)
 
 -- | This functions tells Servant how to run the 'App' monad with our
--- 'server' function.
+-- 'server' function. @NT 'Handler'@ is a natural transformation that
+-- effectively specialises app base monad to IO
 appToServer :: Config -> Server UserAPI
-appToServer cfg = enter (convertApp cfg) userServer
+appToServer cfg = enter (convertApp cfg >>> NT Handler) userServer
 
 -- | This function converts our @'AppT' m@ monad into the @ExceptT ServantErr
 -- m@ monad that Servant's 'enter' function needs in order to run the
@@ -35,14 +37,14 @@ appToServer cfg = enter (convertApp cfg) userServer
 -- non-category theory terms, a function that converts two type
 -- constructors without looking at the values in the types.
 convertApp :: Config -> AppT m :~> ExceptT ServantErr m
-convertApp cfg = Nat (flip runReaderT cfg . runApp)
+convertApp cfg = NT (flip runReaderT cfg . runApp)
 
 -- | Since we also want to provide a minimal front end, we need to give
 -- Servant a way to serve a directory with HTML and JavaScript. This
 -- function creates a WAI application that just serves the files out of the
 -- given directory.
-files :: Application
-files = serveDirectory "assets"
+files :: Server Raw
+files = serveDirectoryWebApp "assets"
 
 -- | Just like a normal API type, we can use the ':<|>' combinator to unify
 -- two different APIs and applications. This is a powerful tool for code
