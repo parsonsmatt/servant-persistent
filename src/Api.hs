@@ -4,20 +4,15 @@
 module Api (app) where
 
 import           Control.Monad.Except
-import           Control.Monad.Reader        (ReaderT, runReaderT)
-import           Data.Int                    (Int64)
-import           Database.Persist.Postgresql (Entity (..), fromSqlKey, insert,
-                                              selectFirst, selectList, (==.))
-import           Network.Wai                 (Application)
-import           Servant                     ((:<|>) ((:<|>)), (:~>) (NT),
-                                              Proxy (Proxy), Raw, ServantErr,
-                                              Server, enter, serve,
-                                              serveDirectoryWebApp)
+import           Data.Int             (Int64)
+import           Servant              ((:<|>) ((:<|>)), (:~>) (NT),
+                                       Proxy (Proxy), Raw, ServantErr, Server,
+                                       enter, serve, serveDirectoryWebApp)
 import           Servant.Server
 
-import           Api.User                    (UserAPI, userServer)
-import           Config                      (AppT (..), Config (..))
-import           Control.Category            ((>>>))
+import           Api.User             (UserAPI, userServer)
+import           Config               (AppT (..), Config (..))
+import           Control.Category     ((<<<), (>>>))
 
 -- | This is the function we export to run our 'UserAPI'. Given
 -- a 'Config', we return a WAI 'Application' which any WAI compliant server
@@ -37,7 +32,7 @@ appToServer cfg = enter (convertApp cfg >>> NT Handler) userServer
 -- non-category theory terms, a function that converts two type
 -- constructors without looking at the values in the types.
 convertApp :: Config -> AppT m :~> ExceptT ServantErr m
-convertApp cfg = NT (flip runReaderT cfg . runApp)
+convertApp cfg = runReaderTNat cfg <<< NT runApp
 
 -- | Since we also want to provide a minimal front end, we need to give
 -- Servant a way to serve a directory with HTML and JavaScript. This
