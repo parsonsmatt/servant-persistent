@@ -71,7 +71,6 @@ library
       , ekg
       , wai-middleware-metrics
       , microlens
-      , unordered-containers
       , containers
       , ekg-core
       , katip >= 0.5.0.2 && < 0.6
