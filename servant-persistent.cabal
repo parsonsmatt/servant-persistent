@@ -21,7 +21,7 @@ executable perservant
     main-is:
         Main.hs
     build-depends:
-        base >=4.7 && <4.9
+        base >= 4.9 && < 5.0
       , servant-persistent
       , persistent-postgresql
       , wai
@@ -50,7 +50,7 @@ library
       , Api.User
       , Logger
     build-depends:
-        base >= 4.7 && < 4.9
+        base >= 4.9 && < 5.0
       , aeson
       , bytestring
       , monad-control
@@ -59,9 +59,9 @@ library
       , persistent
       , persistent-postgresql
       , persistent-template
-      , servant >= 0.7 && < 0.8
-      , servant-js >= 0.7 && < 0.8
-      , servant-server >= 0.7 && < 0.8
+      , servant >= 0.11 && < 0.12
+      , servant-js >= 0.9 && < 0.10
+      , servant-server >= 0.11 && < 0.12
       , transformers
       , wai
       , wai-extra
@@ -72,8 +72,9 @@ library
       , wai-middleware-metrics
       , microlens
       , unordered-containers
+      , containers
       , ekg-core
-      , katip
+      , katip >= 0.5.0.2 && < 0.6
       , fast-logger
 
 test-suite servant-persistent-test
@@ -91,8 +92,8 @@ test-suite servant-persistent-test
       , persistent
       , persistent-postgresql
       , servant-persistent
-      , servant >= 0.7 && < 0.8
-      , servant-server >= 0.7 && < 0.8
+      , servant >= 0.11 && < 0.12
+      , servant-server >= 0.11 && < 0.12
       , QuickCheck
       , hspec
       , mtl

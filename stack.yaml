@@ -2,5 +2,4 @@ flags: {}
 packages:
 - '.'
 extra-deps:
-- monad-metrics-0.2.0.0
-resolver: lts-6.4
+resolver: lts-9.6
