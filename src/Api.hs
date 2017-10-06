@@ -7,7 +7,7 @@ import           Control.Monad.Except
 import           Data.Int             (Int64)
 import           Servant              ((:<|>) ((:<|>)), (:~>) (NT),
                                        Proxy (Proxy), Raw, ServantErr, Server,
-                                       enter, serve, serveDirectoryWebApp)
+                                       enter, serve, serveDirectoryFileServer)
 import           Servant.Server
 
 import           Api.User             (UserAPI, userServer)
@@ -39,7 +39,7 @@ convertApp cfg = runReaderTNat cfg <<< NT runApp
 -- function creates a WAI application that just serves the files out of the
 -- given directory.
 files :: Server Raw
-files = serveDirectoryWebApp "assets"
+files = serveDirectoryFileServer "assets"
 
 -- | Just like a normal API type, we can use the ':<|>' combinator to unify
 -- two different APIs and applications. This is a powerful tool for code
