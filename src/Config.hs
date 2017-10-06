@@ -58,6 +58,7 @@ instance Monad m => MonadMetrics (AppT m) where
 -- | Katip instance for @AppT m@
 instance MonadIO m => Katip (AppT m) where
     getLogEnv = asks configLogEnv
+    localLogEnv = error "not implemented"
 
 -- | MonadLogger instance to use within @AppT m@
 instance MonadIO m => MonadLogger (AppT m) where
