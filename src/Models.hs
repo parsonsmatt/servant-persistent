@@ -14,11 +14,9 @@
 module Models where
 
 import           Control.Monad.Reader (MonadIO, MonadReader, asks, liftIO)
-import           Data.Aeson           (FromJSON, ToJSON)
 import           Database.Persist.Sql (SqlPersistT, runMigration, runSqlPool)
 import           Database.Persist.TH  (mkMigrate, mkPersist, persistLowerCase,
                                        share, sqlSettings)
-import           GHC.Generics         (Generic)
 
 import           Config               (Config, configPool)
 import           Data.Text            (Text)

@@ -37,6 +37,8 @@ executable perservant
         app
     default-language:
         Haskell2010
+    ghc-options:
+        -fwarn-unused-imports
 
 library
     default-language:
@@ -75,6 +77,8 @@ library
       , ekg-core
       , katip >= 0.5.0.2 && < 0.6
       , fast-logger
+    ghc-options:
+        -fwarn-unused-imports
 
 test-suite servant-persistent-test
     type:
@@ -100,6 +104,6 @@ test-suite servant-persistent-test
       , text
       , monad-metrics
     ghc-options:
-        -threaded -rtsopts -with-rtsopts=-N
+        -threaded -rtsopts -with-rtsopts=-N -fwarn-unused-imports
     default-language:
         Haskell2010

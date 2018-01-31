@@ -7,12 +7,11 @@ module Config where
 import           Control.Exception                    (throwIO)
 import           Control.Monad.Except                 (ExceptT, MonadError)
 import           Control.Monad.IO.Class
-import           Control.Monad.Logger                 (MonadLogger (..),
-                                                       toLogStr)
+import           Control.Monad.Logger                 (MonadLogger (..))
 import           Control.Monad.Metrics                (Metrics, MonadMetrics,
                                                        getMetrics)
 import           Control.Monad.Reader                 (MonadIO, MonadReader,
-                                                       ReaderT, ask, asks)
+                                                       ReaderT, asks)
 import           Control.Monad.Trans.Class
 import           Control.Monad.Trans.Maybe            (MaybeT (..), runMaybeT)
 import qualified Data.ByteString.Char8                as BS

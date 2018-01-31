@@ -4,7 +4,6 @@
 module Api (app) where
 
 import           Control.Monad.Except
-import           Data.Int             (Int64)
 import           Servant              ((:<|>) ((:<|>)), (:~>) (NT),
                                        Proxy (Proxy), Raw, ServantErr, Server,
                                        enter, serve, serveDirectoryFileServer)
