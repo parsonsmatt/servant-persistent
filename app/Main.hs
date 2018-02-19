@@ -3,11 +3,9 @@ module Main where
 
 import qualified Control.Monad.Metrics       as M
 import           Database.Persist.Postgresql (runSqlPool)
-import           Lens.Micro
 import           Network.Wai.Handler.Warp    (run)
 import           Network.Wai.Metrics
 import           System.Environment          (lookupEnv)
-import           System.Metrics              (newStore)
 import           System.Remote.Monitoring    (forkServer, serverMetricStore)
 
 import           Api                         (app)

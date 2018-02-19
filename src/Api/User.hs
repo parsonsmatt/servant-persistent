@@ -7,19 +7,13 @@ module Api.User where
 import           Control.Monad.Except        (MonadIO, liftIO)
 import           Control.Monad.Logger        (logDebugNS)
 import qualified Control.Monad.Metrics       as Metrics
-import           Control.Monad.Reader        (ReaderT, runReaderT)
 import           Data.Int                    (Int64)
-import           Data.IORef                  (readIORef)
-import           Data.Text                   (Text)
 import           Database.Persist.Postgresql (Entity (..), fromSqlKey, insert,
                                               selectFirst, selectList, (==.))
-import           Lens.Micro                  ((^.))
-import           Network.Wai                 (Application)
-import           Network.Wai.Metrics
 import           Servant
 import           Servant.JS                  (vanillaJS, writeJSForAPI)
 
-import           Config                      (AppT (..), Config (..))
+import           Config                      (AppT (..))
 import           Control.Monad.Metrics       (increment, metricsCounters)
 import           Data.IORef                  (readIORef)
 import           Data.Map                    (Map)
