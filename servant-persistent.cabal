@@ -77,6 +77,7 @@ library
       , ekg-core
       , katip >= 0.5.0.2 && < 0.6
       , fast-logger
+      , unordered-containers
     ghc-options:
         -fwarn-unused-imports
 

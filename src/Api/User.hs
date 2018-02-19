@@ -16,7 +16,7 @@ import           Servant.JS                  (vanillaJS, writeJSForAPI)
 import           Config                      (AppT (..))
 import           Control.Monad.Metrics       (increment, metricsCounters)
 import           Data.IORef                  (readIORef)
-import           Data.Map                    (Map)
+import           Data.HashMap.Lazy           (HashMap)
 import           Data.Text                   (Text)
 import           Lens.Micro                  ((^.))
 import           Models                      (User (User), runDb, userEmail,
@@ -28,7 +28,7 @@ type UserAPI =
          "users" :> Get '[JSON] [Entity User]
     :<|> "users" :> Capture "name" Text :> Get '[JSON] (Entity User)
     :<|> "users" :> ReqBody '[JSON] User :> Post '[JSON] Int64
-    :<|> "metrics" :> Get '[JSON] (Map Text Int64)
+    :<|> "metrics" :> Get '[JSON] (HashMap Text Int64)
 
 -- | The server that runs the UserAPI
 userServer :: MonadIO m => ServerT UserAPI (AppT m)
@@ -62,7 +62,7 @@ createUser p = do
     return $ fromSqlKey newUser
 
 -- | Return wai metrics as JSON
-waiMetrics :: MonadIO m => AppT m (Map Text Int64)
+waiMetrics :: MonadIO m => AppT m (HashMap Text Int64)
 waiMetrics = do
     increment "metrics"
     logDebugNS "web" "metrics"
