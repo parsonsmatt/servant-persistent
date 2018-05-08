@@ -3,35 +3,31 @@
 
 module Api (app) where
 
-import           Control.Monad.Except
-import           Servant              ((:<|>) ((:<|>)), (:~>) (NT),
-                                       Proxy (Proxy), Raw, ServantErr, Server,
-                                       enter, serve, serveDirectoryFileServer)
+import           Control.Monad.Reader (runReaderT)
+import           Servant              ((:<|>) ((:<|>)),
+                                       Proxy (Proxy), Raw, Server,
+                                       serve, serveDirectoryFileServer)
 import           Servant.Server
 
-import           Api.User             (UserAPI, userServer)
+import           Api.User             (UserAPI, userServer, userApi)
 import           Config               (AppT (..), Config (..))
-import           Control.Category     ((<<<), (>>>))
 
 -- | This is the function we export to run our 'UserAPI'. Given
 -- a 'Config', we return a WAI 'Application' which any WAI compliant server
 -- can run.
 userApp :: Config -> Application
-userApp cfg = serve (Proxy :: Proxy UserAPI) (appToServer cfg)
+userApp cfg = serve userApi (appToServer cfg)
 
 -- | This functions tells Servant how to run the 'App' monad with our
--- 'server' function. @NT 'Handler'@ is a natural transformation that
--- effectively specialises app base monad to IO
+-- 'server' function.
 appToServer :: Config -> Server UserAPI
-appToServer cfg = enter (convertApp cfg >>> NT Handler) userServer
+appToServer cfg = hoistServer userApi (convertApp cfg) userServer
 
 -- | This function converts our @'AppT' m@ monad into the @ExceptT ServantErr
 -- m@ monad that Servant's 'enter' function needs in order to run the
--- application. The ':~>' type is a natural transformation, or, in
--- non-category theory terms, a function that converts two type
--- constructors without looking at the values in the types.
-convertApp :: Config -> AppT m :~> ExceptT ServantErr m
-convertApp cfg = runReaderTNat cfg <<< NT runApp
+-- application.
+convertApp :: Config -> AppT IO a -> Handler a
+convertApp cfg appt = Handler $ runReaderT (runApp appt) cfg
 
 -- | Since we also want to provide a minimal front end, we need to give
 -- Servant a way to serve a directory with HTML and JavaScript. This

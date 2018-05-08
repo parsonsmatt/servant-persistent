@@ -30,6 +30,9 @@ type UserAPI =
     :<|> "users" :> ReqBody '[JSON] User :> Post '[JSON] Int64
     :<|> "metrics" :> Get '[JSON] (HashMap Text Int64)
 
+userApi :: Proxy UserAPI
+userApi = Proxy
+
 -- | The server that runs the UserAPI
 userServer :: MonadIO m => ServerT UserAPI (AppT m)
 userServer = allUsers :<|> singleUser :<|> createUser :<|> waiMetrics
