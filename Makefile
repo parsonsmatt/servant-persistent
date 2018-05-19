@@ -6,4 +6,4 @@ ghcid-devel: ## Run the server in fast development mode. See DevelMain for detai
 	    --command "stack ghci servant-persistent" \
 	    --test "DevelMain.update"
 
-.PHONY: ghcid-devel
+.PHONY: ghcid-devel help
