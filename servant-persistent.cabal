@@ -47,37 +47,41 @@ library
         src
     exposed-modules:
         Config
+      , Init
       , Models
       , Api
       , Api.User
       , Logger
+      , DevelMain
     build-depends:
         base >= 4.9 && < 5.0
       , aeson
       , bytestring
+      , containers
+      , ekg
+      , ekg-core
+      , fast-logger
+      , foreign-store
+      , katip >= 0.5.0.2 && < 0.6
+      , microlens
       , monad-control
       , monad-logger
+      , monad-metrics
       , mtl
       , persistent
       , persistent-postgresql
       , persistent-template
+      , safe
       , servant >= 0.13 && < 0.14
       , servant-js >= 0.9 && < 0.10
       , servant-server >= 0.13 && < 0.14
+      , text
       , transformers
+      , unordered-containers
       , wai
       , wai-extra
-      , warp
-      , text
-      , monad-metrics
-      , ekg
       , wai-middleware-metrics
-      , microlens
-      , containers
-      , ekg-core
-      , katip >= 0.5.0.2 && < 0.6
-      , fast-logger
-      , unordered-containers
+      , warp
     ghc-options:
         -fwarn-unused-imports
 
