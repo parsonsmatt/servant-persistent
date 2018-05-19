@@ -62,4 +62,3 @@ lookupSetting env def = do
             , "]] for environment variable "
             , env
             ]
-
