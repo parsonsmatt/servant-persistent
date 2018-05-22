@@ -2,6 +2,7 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE MultiParamTypeClasses      #-}
 {-# LANGUAGE OverloadedStrings          #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 module Config where
 
 import           Control.Exception                    (throwIO)
