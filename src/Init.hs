@@ -5,7 +5,6 @@ module Init where
 import qualified Control.Monad.Metrics       as M
 import           Database.Persist.Postgresql (runSqlPool)
 import           Network.Wai                 (Application)
-import           Network.Wai.Handler.Warp    (Port)
 import           Network.Wai.Metrics         (metrics, registerWaiMetrics)
 import           System.Environment          (lookupEnv)
 import           System.Remote.Monitoring    (forkServer, serverMetricStore)
@@ -19,23 +18,21 @@ import           Models                      (doMigrations)
 import           Safe                        (readMay)
 
 -- | The 'initialize' function gathers the required environment information and
--- initializes the application, returning the port it should run on, the
--- 'Config', and the WAI 'Application' itself.
-initialize :: IO (Port, Config, Application)
-initialize = do
-    cfg@(Config pool env metr logEnv) <- openConfig
-    port <- lookupSetting "PORT" 8081
+-- initializes the WAI 'Application' and returns it
+initialize :: Config -> IO Application
+initialize cfg@(Config pool env _ _ _) = do
     waiMetrics <-
         registerWaiMetrics =<< serverMetricStore
         <$> forkServer "localhost" 8000
     let logger = setLogger env
     runSqlPool doMigrations pool
     generateJavaScript
-    pure (port, cfg, logger $ metrics waiMetrics $ app cfg)
+    pure (logger $ metrics waiMetrics $ app cfg)
 
 -- | Allocates resources for 'Config'
-openConfig :: IO Config
-openConfig = do
+acquireConfig :: IO Config
+acquireConfig = do
+    port <- lookupSetting "PORT" 8081
     env  <- lookupSetting "ENV" Development
     logEnv <- defaultLogEnv
     pool <- makePool env logEnv
@@ -45,7 +42,8 @@ openConfig = do
     pure Config { configPool = pool
                 , configEnv = env
                 , configMetrics = metr
-                , configLogEnv = logEnv }
+                , configLogEnv = logEnv
+                , configPort = port }
 
 -- | When the 'Config' gains some state that may need to be released or
 -- cleaned up, this function will take care of that.

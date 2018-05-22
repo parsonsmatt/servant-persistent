@@ -30,7 +30,8 @@ import           GHC.Word                 (Word32)
 import           Network.Wai.Handler.Warp (defaultSettings, runSettings,
                                            setPort)
 
-import           Init                     (initialize, shutdownApp)
+import           Init                     (initialize, shutdownApp, acquireConfig)
+import           Config                   (configPort)
 
 -- | Start or restart the server.
 -- newStore is from foreign-store.
@@ -63,7 +64,9 @@ update = do
     start :: MVar () -- ^ Written to when the thread is killed.
           -> IO ThreadId
     start done = do
-        (port, config, app) <- initialize
+        config <- acquireConfig
+        app <- initialize config
+        let port = configPort config
         forkIO (finally (runSettings (setPort port defaultSettings) app)
                         -- Note that this implies concurrency
                         -- between shutdownApp and the next app that is starting.
