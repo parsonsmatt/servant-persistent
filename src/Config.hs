@@ -2,6 +2,7 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE MultiParamTypeClasses      #-}
 {-# LANGUAGE OverloadedStrings          #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 module Config where
 
 import           Control.Exception                    (throwIO)
@@ -23,6 +24,7 @@ import           Network.Wai                          (Middleware)
 import           Network.Wai.Middleware.RequestLogger (logStdout, logStdoutDev)
 import           Servant                              (ServantErr)
 import           System.Environment                   (lookupEnv)
+import           Network.Wai.Handler.Warp             (Port)
 
 import           Logger
 
@@ -49,6 +51,7 @@ data Config
     , configEnv     :: Environment
     , configMetrics :: Metrics
     , configLogEnv  :: LogEnv
+    , configPort    :: Port
     }
 
 instance Monad m => MonadMetrics (AppT m) where
