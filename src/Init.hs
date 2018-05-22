@@ -16,6 +16,16 @@ import           Config                      (Config (..), Environment (..),
 import           Logger                      (defaultLogEnv)
 import           Models                      (doMigrations)
 import           Safe                        (readMay)
+import           Control.Exception           (bracket)
+import           Network.Wai.Handler.Warp    (run)
+
+
+-- | An action that creates WAI 'Application' together with its resources
+--   and tears it down on exit
+runApp :: IO ()
+runApp = bracket acquireConfig shutdownApp runApp
+  where
+    runApp config = run (configPort config) =<< initialize config
 
 -- | The 'initialize' function gathers the required environment information and
 -- initializes the WAI 'Application' and returns it
@@ -48,7 +58,7 @@ acquireConfig = do
 -- | When the 'Config' gains some state that may need to be released or
 -- cleaned up, this function will take care of that.
 shutdownApp :: Config -> IO ()
-shutdownApp _ = pure () -- todo: release resources allocated in openConfig
+shutdownApp _ = pure () -- todo: release resources allocated in acquireConfig
 
 -- | Looks up a setting in the environment, with a provided default, and
 -- 'read's that information into the inferred type.
