@@ -18,16 +18,17 @@ import           Models                      (doMigrations)
 import           Safe                        (readMay)
 import           Control.Exception           (bracket)
 import           Network.Wai.Handler.Warp    (run)
+import qualified Data.Pool as Pool
+import qualified Katip
 
-
--- | An action that creates WAI 'Application' together with its resources
---   and tears it down on exit
+-- | An action that creates a WAI 'Application' together with its resources,
+--   runs it, and tears it down on exit
 runApp :: IO ()
 runApp = bracket acquireConfig shutdownApp runApp
   where
     runApp config = run (configPort config) =<< initialize config
 
--- | The 'initialize' function gathers the required environment information and
+-- | The 'initialize' function accepts the required environment information,
 -- initializes the WAI 'Application' and returns it
 initialize :: Config -> IO Application
 initialize cfg@(Config pool env _ _ _) = do
@@ -55,10 +56,15 @@ acquireConfig = do
                 , configLogEnv = logEnv
                 , configPort = port }
 
--- | When the 'Config' gains some state that may need to be released or
--- cleaned up, this function will take care of that.
+-- | Takes care of cleaning up 'Config' resources
 shutdownApp :: Config -> IO ()
-shutdownApp _ = pure () -- todo: release resources allocated in acquireConfig
+shutdownApp (Config pool _env metr logEnv _port) = do
+    Katip.closeScribes logEnv
+    Pool.destroyAllResources pool
+    -- Monad.Metrics does not provide a function to destroy metrics store
+    -- so, it'll hopefully get torn down when async exception gets thrown
+    -- at metrics server process
+    pure ()
 
 -- | Looks up a setting in the environment, with a provided default, and
 -- 'read's that information into the inferred type.

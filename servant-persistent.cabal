@@ -82,6 +82,7 @@ library
       , wai-extra
       , wai-middleware-metrics
       , warp
+      , resource-pool
     ghc-options:
         -fwarn-unused-imports
 
