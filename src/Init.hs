@@ -23,26 +23,34 @@ import           Safe                        (readMay)
 -- 'Config', and the WAI 'Application' itself.
 initialize :: IO (Port, Config, Application)
 initialize = do
-    env  <- lookupSetting "ENV" Development
+    cfg@(Config pool env metr logEnv) <- openConfig
     port <- lookupSetting "PORT" 8081
+    waiMetrics <-
+        registerWaiMetrics =<< serverMetricStore
+        <$> forkServer "localhost" 8000
+    let logger = setLogger env
+    runSqlPool doMigrations pool
+    generateJavaScript
+    pure (port, cfg, logger $ metrics waiMetrics $ app cfg)
+
+-- | Allocates resources for 'Config'
+openConfig :: IO Config
+openConfig = do
+    env  <- lookupSetting "ENV" Development
     logEnv <- defaultLogEnv
     pool <- makePool env logEnv
     store <- serverMetricStore <$> forkServer "localhost" 8000
     waiMetrics <- registerWaiMetrics store
     metr <- M.initializeWith store
-    let cfg = Config { configPool = pool
-                     , configEnv = env
-                     , configMetrics = metr
-                     , configLogEnv = logEnv }
-        logger = setLogger env
-    runSqlPool doMigrations pool
-    generateJavaScript
-    pure (port, cfg, logger $ metrics waiMetrics $ app cfg)
+    pure Config { configPool = pool
+                , configEnv = env
+                , configMetrics = metr
+                , configLogEnv = logEnv }
 
 -- | When the 'Config' gains some state that may need to be released or
 -- cleaned up, this function will take care of that.
 shutdownApp :: Config -> IO ()
-shutdownApp _ = pure ()
+shutdownApp _ = pure () -- todo: release resources allocated in openConfig
 
 -- | Looks up a setting in the environment, with a provided default, and
 -- 'read's that information into the inferred type.
