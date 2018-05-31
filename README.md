@@ -93,31 +93,9 @@ sudo usermod -aG docker <username>
 
 After the installation, restart your terminal and the installation is complete.
 
-The most easiest way to run postgresql is to use docker-compose.
-Here's an example of an `docker-compose.yml` file.
-
-```docker-compose.yml
-version: '3.1'
-
-services:
-  postgres:
-    image: postgres
-    ports:
-      - '127.0.0.1:5432:5432'
-    environment:
-      - POSTGRES_PASSWORD=test
-      - POSTGRES_USER=test
-      - POSTGRES_DB=perservant
-    volumes:
-      - perservant-db:/var/lib/postgresql/data:rw
-
-volumes:
-  perservant-db:
-```
-
-To run the postgresql, run `docker-compose up`. After you're done using it, run
-`docker-compose down` to take it down entirely. Note that the data will persist
-until you've deleted the volume.
+To run the postgresql, run `docker-compose up -d` which docker will run postgresql on the background.
+After you're done using it, run `docker-compose down` to take it down entirely.
+Note that the data will persist until you've deleted the volume.
 
 ## The API:
 
