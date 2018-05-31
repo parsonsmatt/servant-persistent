@@ -93,15 +93,14 @@ sudo usermod -aG docker <username>
 
 After the installation, restart your terminal and the installation is complete.
 
-You'll also need to install docker compose seperately. To install it, run the
-command below.
+You'll also need to install docker compose seperately. To install it, run the command below.
 
 ```terminal
 sudo curl -L https://github.com/docker/compose/releases/download/1.21.2/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose
 ```
 
-If you can check if the installation was successful by running `docker-compose --version`.
+To check if the installation was successful, run command `docker-compose --version`.
 
 To run the postgresql, run `docker-compose up -d` which docker will run postgresql
 on the background. After you're done using it, run `docker-compose down` to take
