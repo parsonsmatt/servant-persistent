@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+
+  dev:
+    build: ./support/dev/
+    working_dir: /work
+    command: ./support/dev/entrypoint
+    volumes:
+      - .:/work
+      - stack-global:/root/.stack
+    ports:
+      - 8080:8080
+    environment:
+      PGDATABASE: perservant
+      PGHOST: database
+      PGUSER: test
+      PGPASS: test
+    depends_on:
+      - database
+
+  database:
+    image: postgres:11.1
+    environment:
+      POSTGRES_DB: perservant
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+    ports:
+      - 5432:5432
+
+  ci:
+    image: myregistry.com/servant-persistent-ci-base:2
+    working_dir: /work
+    volumes:
+      - .:/work
+
+volumes:
+  stack-global:
+    external: true

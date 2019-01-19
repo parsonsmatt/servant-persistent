@@ -1,0 +1,15 @@
+#!/bin/bash
+set -Eeuo pipefail
+
+echo 'Waiting for database to start'
+
+PGPASSWORD=$PGPASS timeout --foreground 30 sh -c '
+  while ! psql -h $PGHOST -U $PGUSER -d $PGDATABASE -c "\list" 1>/dev/null
+  do
+    echo "."
+    sleep 1
+  done
+'
+echo 'Hi database!'
+
+./support/dev/run
