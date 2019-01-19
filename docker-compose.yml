@@ -10,7 +10,7 @@ services:
       - .:/work
       - stack-global:/root/.stack
     ports:
-      - 8080:8080
+      - 8081:8081
     environment:
       PGDATABASE: perservant
       PGHOST: database

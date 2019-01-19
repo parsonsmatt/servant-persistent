@@ -1,0 +1,4 @@
+resolver: lts-11.22
+name: custom-snapshot
+packages:
+- katip-0.5.4.0
