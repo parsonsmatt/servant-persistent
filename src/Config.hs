@@ -16,12 +16,10 @@ import           Control.Monad.Metrics                (Metrics, MonadMetrics,
                                                        getMetrics)
 import           Control.Monad.Reader                 (MonadIO, MonadReader,
                                                        ReaderT, asks)
-import           Control.Monad.Trans.Class
 import           Control.Monad.Trans.Maybe            (MaybeT (..), runMaybeT)
 import qualified Data.ByteString.Char8                as BS
 import           Data.Monoid                          ((<>))
 import           Database.Persist.Postgresql          (ConnectionPool,
-                                                       ConnectionString,
                                                        createPostgresqlPool)
 import           Network.Wai                          (Middleware)
 import           Network.Wai.Handler.Warp             (Port)
@@ -98,17 +96,21 @@ katipLogger env app req respond = runKatipT env $ do
     logMsg "web" InfoS "todo: received some request"
     liftIO $ app req respond
 
--- | This function creates a 'ConnectionPool' for the given environment.
--- For 'Development' and 'Test' environments, we use a stock and highly
--- insecure connection string. The 'Production' environment acquires the
--- information from environment variables that are set by the keter
--- deployment application.
+-- | This function creates a 'ConnectionPool'
 makePool :: Environment -> LogEnv -> IO ConnectionPool
-makePool Test env =
-    runKatipT env (createPostgresqlPool (connStr "-test") (envPool Test))
-makePool Development env =
-    runKatipT env $ createPostgresqlPool (connStr "") (envPool Development)
-makePool Production env = do
+makePool environment logEnv = do
+    maybeConnStr <- getConnStr
+    case maybeConnStr of
+        -- If we don't have a correct database configuration, we can't
+        -- handle that in the program, so we throw an IO exception. This is
+        -- one example where using an exception is preferable to 'Maybe' or
+        -- 'Either'.
+         Nothing -> throwIO (userError "Database Configuration not present in environment.")
+         Just connStr -> runKatipT logEnv (createPostgresqlPool connStr (envPool environment))
+
+-- | Attempt to produce a connection string from the environment
+getConnStr :: IO (Maybe BS.ByteString)
+getConnStr = runMaybeT $ do
     -- This function makes heavy use of the 'MaybeT' monad transformer, which
     -- might be confusing if you're not familiar with it. It allows us to
     -- combine the effects from 'IO' and the effect of 'Maybe' into a single
@@ -116,37 +118,23 @@ makePool Production env = do
     -- @a@. If we just had @IO (Maybe a)@, then binding out of the IO would
     -- give us a @Maybe a@, which would make the code quite a bit more
     -- verbose.
-    pool <- runMaybeT $ do
-        let keys = [ "host="
-                   , "port="
-                   , "user="
-                   , "password="
-                   , "dbname="
-                   ]
-            envs = [ "PGHOST"
-                   , "PGPORT"
-                   , "PGUSER"
-                   , "PGPASS"
-                   , "PGDATABASE"
-                   ]
-        envVars <- traverse (MaybeT . lookupEnv) envs
-        let prodStr = BS.intercalate " " . zipWith (<>) keys $ BS.pack <$> envVars
-        lift $ runKatipT env $ createPostgresqlPool prodStr (envPool Production)
-    case pool of
-        -- If we don't have a correct database configuration, we can't
-        -- handle that in the program, so we throw an IO exception. This is
-        -- one example where using an exception is preferable to 'Maybe' or
-        -- 'Either'.
-         Nothing -> throwIO (userError "Database Configuration not present in environment.")
-         Just a -> return a
+    let keys = [ "host="
+                , "port="
+                , "user="
+                , "password="
+                , "dbname="
+                ]
+        envs = [ "PGHOST"
+                , "PGPORT"
+                , "PGUSER"
+                , "PGPASS"
+                , "PGDATABASE"
+                ]
+    envVars <- traverse (MaybeT . lookupEnv) envs
+    pure $ BS.intercalate " " . zipWith (<>) keys $ BS.pack <$> envVars
 
 -- | The number of pools to use for a given environment.
 envPool :: Environment -> Int
 envPool Test        = 1
 envPool Development = 1
 envPool Production  = 8
-
--- | A basic 'ConnectionString' for local/test development. Pass in either
--- @""@ for 'Development' or @"test"@ for 'Test'.
-connStr :: BS.ByteString -> ConnectionString
-connStr sfx = "host=localhost dbname=perservant" <> sfx <> " user=test password=test port=5432"

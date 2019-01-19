@@ -16,6 +16,7 @@ services:
       PGHOST: database
       PGUSER: test
       PGPASS: test
+      PGPORT: 5432
     depends_on:
       - database
 
