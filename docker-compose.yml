@@ -30,7 +30,7 @@ services:
       - 5432:5432
 
   ci:
-    image: myregistry.com/servant-persistent-ci-base:2
+    image: myregistry.com/servant-persistent-ci-base:1
     working_dir: /work
     volumes:
       - .:/work

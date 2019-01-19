@@ -1,0 +1,21 @@
+#!/bin/bash
+set -Eexuo pipefail
+
+cd $(dirname $0)/..
+
+VERSION=1
+
+REPOSITORY=myregistry.com/servant-persistent-ci-base
+IMAGE=$REPOSITORY:$VERSION
+
+echo building $IMAGE
+docker build -t $IMAGE -f support/ci-base/Dockerfile .
+
+# this container can be run with docker run -t $IMAGE
+docker tag $IMAGE $REPOSITORY:latest
+
+# push to registry for use in CI
+# echo pushing $IMAGE to registry
+# docker push $IMAGE
+# echo pushing $REPOSITORY:latest to registry
+# docker push $REPOSITORY:latest
