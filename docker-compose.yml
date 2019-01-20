@@ -29,6 +29,21 @@ services:
     ports:
       - 5432:5432
 
+  test-prod:
+    build:
+      dockerfile: ./support/prod/Dockerfile
+      context: .
+    ports:
+      - 8081:8081
+    environment:
+      PGDATABASE: perservant
+      PGHOST: database
+      PGUSER: test
+      PGPASS: test
+      PGPORT: 5432
+    depends_on:
+      - database
+
   ci:
     image: myregistry.com/servant-persistent-ci-base:1
     working_dir: /work

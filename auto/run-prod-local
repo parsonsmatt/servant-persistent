@@ -3,9 +3,8 @@ set -Eexuo pipefail
 
 cd $(dirname $0)/..
 
-# auto/build-to-local
+auto/build-to-local
 
-docker build -t myregistry.com/servant-persistent:latest -f support/prod/Dockerfile .
+docker-compose build test-prod
 
-exec docker run \
-  -it myregistry.com/servant-persistent:latest
+docker-compose run --rm --service-ports test-prod
