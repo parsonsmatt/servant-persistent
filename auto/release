@@ -1,0 +1,24 @@
+#!/bin/bash
+set -Eexuo pipefail
+
+cd $(dirname $0)/..
+
+REPOSITORY=myregistry.com/servant-persistent
+SEMVER=0
+VERSION=$SEMVER.${BUILDKITE_BUILD_NUMBER:-dev}
+IMAGE=$REPOSITORY:$VERSION
+
+# this is to pass the new docker image between CI steps
+mkdir -p artifacts
+echo $IMAGE > artifacts/docker-image.txt
+
+echo building $IMAGE
+docker build -t $IMAGE -f support/prod/Dockerfile .
+
+# this container can be run with docker run -t $IMAGE
+docker tag $IMAGE $REPOSITORY:latest
+
+# echo pushing $IMAGE to registry
+# docker push $IMAGE
+# echo pushing $REPOSITORY:latest to registry
+# docker push $REPOSITORY:latest
