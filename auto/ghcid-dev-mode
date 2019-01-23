@@ -1,0 +1,8 @@
+#!/bin/bash
+set -Eexuo pipefail
+
+cd $(dirname $0)/..
+
+auto/dev-environment ghcid \
+	    --command "stack ghci servant-persistent" \
+	    --test "DevelMain.update"
