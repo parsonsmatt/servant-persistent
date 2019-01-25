@@ -3,4 +3,4 @@ set -Eexuo pipefail
 
 cd $(dirname $0)/..
 
-docker-compose run --rm -d --service-ports database
+docker-compose down
