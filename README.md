@@ -93,6 +93,4 @@ auto/test
 
 ### Why use a custom snapshot?
 
-This allows extra dependencies to be baked into the ci base image. Otherwise they are build locally into `.stack-work`
-
-###
+This allows extra dependencies to be baked into the ci base image. Otherwise they are built locally into `.stack-work`
