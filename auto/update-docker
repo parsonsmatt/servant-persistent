@@ -1,0 +1,11 @@
+#!/bin/bash
+set -Eexuo pipefail
+
+cd "$(dirname "$0")"/../..
+
+VERSION=1.1.2
+
+docker run --rm -v "$(pwd)":/cwd "realestate/dfresh:$VERSION" update support/dev/Dockerfile
+docker run --rm -v "$(pwd)":/cwd "realestate/dfresh:$VERSION" update support/ci-base/Dockerfile
+docker run --rm -v "$(pwd)":/cwd "realestate/dfresh:$VERSION" update support/prod/Dockerfile
+docker run --rm -v "$(pwd)":/cwd "realestate/dfresh:$VERSION" update docker-compose.yml

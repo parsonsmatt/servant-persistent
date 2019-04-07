@@ -8,7 +8,7 @@ services:
     command: ./support/dev/entrypoint
     volumes:
       - .:/work
-      - stack-global:/root/.stack
+      - stack-global-debian:/root/.stack
     ports:
       - 8081:8081
     environment:
@@ -21,7 +21,7 @@ services:
       - database
 
   database:
-    image: postgres:11.1
+    image: postgres:11.2
     environment:
       POSTGRES_DB: perservant
       POSTGRES_USER: test
@@ -51,5 +51,5 @@ services:
       - .:/work
 
 volumes:
-  stack-global:
+  stack-global-debian:
     external: true

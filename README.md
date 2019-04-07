@@ -94,3 +94,9 @@ auto/test
 ### Why use a custom snapshot?
 
 This allows extra dependencies to be baked into the ci base image. Otherwise they are built locally into `.stack-work`
+
+### Why not use the official fpco stack-build containers?
+
+For some reason the official stack docker images are very large. 8GB vs 1.3GB for official haskell, which include stack. (Although looks like there is a new [stack-build-small](https://hub.docker.com/r/fpco/stack-build-small) at 2.67GB)
+
+Also, the stack image is based off of (old) Ubuntu, while official haskell is based on (latest) debian. Debian is a much better fit for a docker container OS and it's simpler if the build and prod OS are the same.

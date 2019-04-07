@@ -3,10 +3,10 @@ set -Eexuo pipefail
 
 cd $(dirname $0)/..
 
-docker volume create --name stack-global > /dev/null
+docker volume create --name stack-global-debian > /dev/null
 
 mkdir -p ./dist
 
 docker-compose build ${SERVICE-dev}
 
-docker-compose run --rm ${SERVICE-dev} "$@"
+docker-compose run --service-ports --rm ${SERVICE-dev} "$@"

@@ -6,3 +6,5 @@ local-bin-path: dist
 # This means for example you can have a base image with extra deps included.
 # It is also more portable between machines (and host vs docker).
 resolver: custom-snapshot.yaml
+
+install-ghc: true

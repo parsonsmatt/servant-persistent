@@ -1,11 +1,5 @@
 #!/bin/bash
 set -Eexuo pipefail
 
-echo 'Building..'
-
 # required as the owner of /work is the owner of the mapped in directory on the host
-stack build --allow-different-user
-
-echo 'Running..'
-
-stack exec perservant --allow-different-user
+stack run --allow-different-user
