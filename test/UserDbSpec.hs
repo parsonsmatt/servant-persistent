@@ -10,8 +10,8 @@ import           Control.Exception           (throwIO)
 import           Control.Monad.Except        (runExceptT)
 import           Control.Monad.Reader        (runReaderT)
 
-import           Database.Persist.Postgresql (Entity (..), deleteWhere,
-                                              insert, runSqlPool)
+import           Database.Persist.Postgresql (Entity (..), deleteWhere, insert,
+                                              runSqlPool)
 import           Database.Persist.Sql        (ConnectionPool)
 import           Database.Persist.Types      (Filter)
 

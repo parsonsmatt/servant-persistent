@@ -15,8 +15,8 @@ import           Servant.JS                  (vanillaJS, writeJSForAPI)
 
 import           Config                      (AppT (..))
 import           Control.Monad.Metrics       (increment, metricsCounters)
-import           Data.IORef                  (readIORef)
 import           Data.HashMap.Lazy           (HashMap)
+import           Data.IORef                  (readIORef)
 import           Data.Text                   (Text)
 import           Lens.Micro                  ((^.))
 import           Models                      (User (User), runDb, userEmail,

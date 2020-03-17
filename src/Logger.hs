@@ -11,10 +11,10 @@ module Logger
     ) where
 
 import           Control.Monad.Logger
-import qualified Control.Monad.Logger   as Logger
+import qualified Control.Monad.Logger  as Logger
 import           Katip
-import qualified System.IO              as IO
-import qualified System.Log.FastLogger  as FastLogger
+import qualified System.IO             as IO
+import qualified System.Log.FastLogger as FastLogger
 
 defaultLogEnv :: IO LogEnv
 defaultLogEnv = do
