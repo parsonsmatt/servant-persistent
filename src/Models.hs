@@ -21,7 +21,10 @@ import           Database.Persist.TH  (mkMigrate, mkPersist, persistLowerCase,
 import           Config               (Config, configPool)
 import           Data.Text            (Text)
 
-share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
+share
+    [ mkPersist sqlSettings
+    , mkMigrate "migrateAll"
+    ] [persistLowerCase|
 User json
     name Text
     email Text
