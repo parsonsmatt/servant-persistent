@@ -1,6 +1,6 @@
-{-# LANGUAGE DataKinds                  #-}
+{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE TypeOperators              #-}
+{-# LANGUAGE TypeOperators #-}
 
 module UserDbSpec where
 

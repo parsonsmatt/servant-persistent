@@ -10,7 +10,7 @@ steps:
       space_surround: false
   - language_pragmas:
       style: vertical
-      align: true
+      align: false
       remove_redundant: true
   - simple_align:
      cases: false

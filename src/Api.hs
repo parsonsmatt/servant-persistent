@@ -1,4 +1,4 @@
-{-# LANGUAGE DataKinds     #-}
+{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE TypeOperators #-}
 
 module Api (app) where
