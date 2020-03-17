@@ -2,27 +2,25 @@
 
 module Init where
 
-import           Control.Concurrent          (killThread)
-import qualified Control.Monad.Metrics       as M
-import           Database.Persist.Postgresql (runSqlPool)
-import           Lens.Micro                  ((^.))
-import           Network.Wai                 (Application)
-import           Network.Wai.Metrics         (metrics, registerWaiMetrics)
-import           System.Environment          (lookupEnv)
-import           System.Remote.Monitoring    (forkServer, serverMetricStore,
-                                              serverThreadId)
+import Control.Concurrent (killThread)
+import qualified Control.Monad.Metrics as M
+import Database.Persist.Postgresql (runSqlPool)
+import Lens.Micro ((^.))
+import Network.Wai (Application)
+import Network.Wai.Metrics (metrics, registerWaiMetrics)
+import System.Environment (lookupEnv)
+import System.Remote.Monitoring (forkServer, serverMetricStore, serverThreadId)
 
-import           Api                         (app)
-import           Api.User                    (generateJavaScript)
-import           Config                      (Config (..), Environment (..),
-                                              makePool, setLogger)
-import           Control.Exception           (bracket)
-import qualified Data.Pool                   as Pool
+import Api (app)
+import Api.User (generateJavaScript)
+import Config (Config(..), Environment(..), makePool, setLogger)
+import Control.Exception (bracket)
+import qualified Data.Pool as Pool
 import qualified Katip
-import           Logger                      (defaultLogEnv)
-import           Models                      (doMigrations)
-import           Network.Wai.Handler.Warp    (run)
-import           Safe                        (readMay)
+import Logger (defaultLogEnv)
+import Models (doMigrations)
+import Network.Wai.Handler.Warp (run)
+import Safe (readMay)
 
 -- | An action that creates a WAI 'Application' together with its resources,
 --   runs it, and tears it down on exit

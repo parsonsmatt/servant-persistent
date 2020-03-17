@@ -1,7 +1,7 @@
 module ApiSpec where
 
-import           Test.Hspec
-import           Test.QuickCheck
+import Test.Hspec
+import Test.QuickCheck
 
 spec :: Spec
 spec = do

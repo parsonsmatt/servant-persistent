@@ -4,25 +4,24 @@
 
 module Api.User where
 
-import           Control.Monad.Except        (MonadIO, liftIO)
-import           Control.Monad.Logger        (logDebugNS)
-import qualified Control.Monad.Metrics       as Metrics
-import           Data.Int                    (Int64)
-import           Database.Persist.Postgresql (Entity (..), fromSqlKey, insert,
-                                              selectFirst, selectList, (==.))
-import           Servant
-import           Servant.JS                  (vanillaJS, writeJSForAPI)
+import Control.Monad.Except (MonadIO, liftIO)
+import Control.Monad.Logger (logDebugNS)
+import qualified Control.Monad.Metrics as Metrics
+import Data.Int (Int64)
+import Database.Persist.Postgresql
+       (Entity(..), fromSqlKey, insert, selectFirst, selectList, (==.))
+import Servant
+import Servant.JS (vanillaJS, writeJSForAPI)
 
-import           Config                      (AppT (..))
-import           Control.Monad.Metrics       (increment, metricsCounters)
-import           Data.HashMap.Lazy           (HashMap)
-import           Data.IORef                  (readIORef)
-import           Data.Text                   (Text)
-import           Lens.Micro                  ((^.))
-import           Models                      (User (User), runDb, userEmail,
-                                              userName)
-import qualified Models                      as Md
-import qualified System.Metrics.Counter      as Counter
+import Config (AppT(..))
+import Control.Monad.Metrics (increment, metricsCounters)
+import Data.HashMap.Lazy (HashMap)
+import Data.IORef (readIORef)
+import Data.Text (Text)
+import Lens.Micro ((^.))
+import Models (User(User), runDb, userEmail, userName)
+import qualified Models as Md
+import qualified System.Metrics.Counter as Counter
 
 type UserAPI =
          "users" :> Get '[JSON] [Entity User]

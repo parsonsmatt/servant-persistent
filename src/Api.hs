@@ -3,13 +3,19 @@
 
 module Api (app) where
 
-import           Control.Monad.Reader (runReaderT)
-import           Servant              ((:<|>) ((:<|>)), Proxy (Proxy), Raw,
-                                       Server, serve, serveDirectoryFileServer)
-import           Servant.Server
+import Control.Monad.Reader (runReaderT)
+import Servant
+       ( (:<|>)((:<|>))
+       , Proxy(Proxy)
+       , Raw
+       , Server
+       , serve
+       , serveDirectoryFileServer
+       )
+import Servant.Server
 
-import           Api.User             (UserAPI, userApi, userServer)
-import           Config               (AppT (..), Config (..))
+import Api.User (UserAPI, userApi, userServer)
+import Config (AppT(..), Config(..))
 
 -- | This is the function we export to run our 'UserAPI'. Given
 -- a 'Config', we return a WAI 'Application' which any WAI compliant server
