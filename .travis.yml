@@ -25,6 +25,7 @@ before_install:
 - mkdir -p ~/.local/bin
 - export PATH=$HOME/.local/bin:$PATH
 - travis_retry curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
+- stack install stylish-haskell --resolver nightly-2020-03-14
 
 services:
 - postgresql
@@ -37,7 +38,10 @@ before_script:
 # This line does all of the work: installs GHC if necessary, build the library,
 # executables, and test suites, and runs the test suites. --no-terminal works
 # around some quirks in Travis's terminal implementation.
-script: stack --no-terminal --install-ghc test
+script: 
+- make imports
+- git diff --exit-code
+- stack --no-terminal --install-ghc test
 
 # Caching so the next build will be fast too.
 cache:

@@ -6,4 +6,7 @@ ghcid-devel: ## Run the server in fast development mode. See DevelMain for detai
 	    --command "stack ghci servant-persistent" \
 	    --test "DevelMain.update"
 
-.PHONY: ghcid-devel help
+imports: ## Format all the imports that have changed since the master branch.
+	./stylish-haskell.sh
+
+.PHONY: ghcid-devel help imports

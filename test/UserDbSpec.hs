@@ -1,27 +1,25 @@
-{-# LANGUAGE DataKinds                  #-}
+{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE TypeOperators              #-}
+{-# LANGUAGE TypeOperators #-}
 
 module UserDbSpec where
 
-import           Test.Hspec
+import Test.Hspec
 
-import           Control.Exception           (throwIO)
-import           Control.Monad.Except        (runExceptT)
-import           Control.Monad.Reader        (runReaderT)
+import Control.Exception (throwIO)
+import Control.Monad.Except (runExceptT)
+import Control.Monad.Reader (runReaderT)
 
-import           Database.Persist.Postgresql (Entity (..), deleteWhere, insert,
-                                              runSqlPool)
-import           Database.Persist.Sql        (ConnectionPool)
-import           Database.Persist.Types      (Filter)
+import Database.Persist.Postgresql (Entity(..), deleteWhere, insert, runSqlPool)
+import Database.Persist.Sql (ConnectionPool)
+import Database.Persist.Types (Filter)
 
-import           Api.User
-import           Config                      (App, AppT (..), Config (..),
-                                              Environment (..), makePool)
-import           Control.Monad.Metrics       (initialize)
-import qualified Data.Text                   as T
-import           Logger                      (defaultLogEnv)
-import           Models
+import Api.User
+import Config (App, AppT(..), Config(..), Environment(..), makePool)
+import Control.Monad.Metrics (initialize)
+import qualified Data.Text as T
+import Logger (defaultLogEnv)
+import Models
 
 runAppToIO :: Config -> App a -> IO a
 runAppToIO config app = do
