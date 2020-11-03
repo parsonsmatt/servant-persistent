@@ -4,7 +4,10 @@ help: ## Print documentation
 ghcid-devel: ## Run the server in fast development mode. See DevelMain for details.
 	ghcid \
 	    --command "stack ghci servant-persistent" \
-	    --test "DevelMain.update"
+	    --test DevelMain.update \
+	    --warnings \
+	    --restart ./servant-persistent.cabal \
+	    --restart ./stack.yaml
 
 imports: ## Format all the imports that have changed since the master branch.
 	./stylish-haskell.sh

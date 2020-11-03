@@ -1,14 +1,14 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE StrictData, OverloadedStrings #-}
 
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Config where
 
 import Control.Concurrent (ThreadId)
-import Control.Exception (throwIO)
+import Control.Exception.Safe (throwIO)
 import Control.Monad.Except (ExceptT, MonadError)
 import Control.Monad.IO.Class
 import Control.Monad.Logger (MonadLogger(..))

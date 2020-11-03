@@ -16,10 +16,10 @@ import Database.Persist.Types (Filter)
 
 import Api.User
 import Config (App, AppT(..), Config(..), Environment(..), makePool)
-import Control.Monad.Metrics (initialize)
 import qualified Data.Text as T
 import Logger (defaultLogEnv)
 import Models
+import Init
 
 runAppToIO :: Config -> App a -> IO a
 runAppToIO config app = do
@@ -30,14 +30,14 @@ runAppToIO config app = do
 
 setupTeardown :: (Config -> IO a) -> IO ()
 setupTeardown runTestsWith = do
+    cfg <- acquireConfig
     env <- defaultLogEnv
     pool <- makePool Test env
-    metrics <- initialize
     migrateDb pool
-    runTestsWith $ Config { configPool = pool
-                          , configEnv = Test
-                          , configMetrics = metrics
-                          , configLogEnv = env }
+    runTestsWith cfg
+        { configEnv = Test
+        , configPool = pool
+        }
     cleanDb pool
   where
     migrateDb :: ConnectionPool -> IO ()

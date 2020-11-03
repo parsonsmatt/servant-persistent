@@ -28,11 +28,13 @@ executable perservant
       , warp
       , monad-logger
       , safe
+      , safe-exceptions
       , monad-metrics
       , wai-middleware-metrics
       , microlens
       , ekg
       , ekg-core
+      , say
     hs-source-dirs:
         app
     default-language:

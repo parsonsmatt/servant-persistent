@@ -1,8 +1,8 @@
 module Main where
 
-import Init (runApp)
+import Init (runAppDevel)
 
 -- | The 'main' function gathers the required environment information and
 -- initializes the application.
 main :: IO ()
-main = runApp
+main = runAppDevel
