@@ -75,6 +75,37 @@ Type "help" for help.
 perservant=#
 ```
 
+You can also use [docker](https://www.docker.com/) to run the database which 
+let you use postgresql without ever installing it on your machine.
+
+If you're using Linux and want to install docker, there's a script that Docker
+is providing which you can use to install everything you need with few commands.
+
+https://get.docker.com/
+
+Basically, you need to run the command below.
+
+```terminal
+curl -fsSL get.docker.com -o get-docker.sh
+sh get-docker.sh
+sudo usermod -aG docker <username>
+```
+
+After the installation, restart your terminal and the installation is complete.
+
+You'll also need to install docker compose seperately. To install it, run the command below.
+
+```terminal
+sudo curl -L https://github.com/docker/compose/releases/download/1.21.2/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+```
+
+To check if the installation was successful, run command `docker-compose --version`.
+
+To run the postgresql, run `docker-compose up -d` which docker will run postgresql
+on the background. After you're done using it, run `docker-compose down` to take
+it down entirely. Note that the data will persist until you've deleted the volume.
+
 ## The API:
 
 - GET `/users` returns a list of all users in the database
