@@ -129,13 +129,11 @@ makePool Production env = do
         envVars <- traverse (MaybeT . lookupEnv) envs
         let prodStr = BS.intercalate " " . zipWith (<>) keys $ BS.pack <$> envVars
         lift $ runKatipT env $ createPostgresqlPool prodStr (envPool Production)
-    case pool of
-        -- If we don't have a correct database configuration, we can't
-        -- handle that in the program, so we throw an IO exception. This is
-        -- one example where using an exception is preferable to 'Maybe' or
-        -- 'Either'.
-         Nothing -> throwIO (userError "Database Configuration not present in environment.")
-         Just a -> return a
+    -- If we don't have a correct database configuration, we can't
+    -- handle that in the program, so we throw an IO exception. This is
+    -- one example where using an exception is preferable to 'Maybe' or
+    -- 'Either'.
+    maybe (throwIO $ userError "Database Configuration not present in environment.") return pool
 
 -- | The number of pools to use for a given environment.
 envPool :: Environment -> Int

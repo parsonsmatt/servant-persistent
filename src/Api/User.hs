@@ -49,11 +49,7 @@ singleUser str = do
     increment "singleUser"
     logDebugNS "web" "singleUser"
     maybeUser <- runDb (selectFirst [Md.UserName ==. str] [])
-    case maybeUser of
-         Nothing ->
-            throwError err404
-         Just person ->
-            return person
+    maybe (throwError err404) return maybeUser
 
 -- | Creates a user in the database.
 createUser :: MonadIO m => User -> AppT m Int64

@@ -24,9 +24,7 @@ import Init
 runAppToIO :: Config -> App a -> IO a
 runAppToIO config app = do
     result <- runExceptT $ runReaderT (runApp app) config
-    case result of
-        Left err -> throwIO err
-        Right a  -> return a
+    either throwIO return result
 
 setupTeardown :: (Config -> IO a) -> IO ()
 setupTeardown runTestsWith = do

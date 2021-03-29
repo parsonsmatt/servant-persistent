@@ -6,6 +6,7 @@ module Init where
 import Data.Typeable
 import qualified Data.Text as Text
 import Data.Text (Text)
+import Data.Maybe (fromMaybe)
 import Control.Monad.Logger
 import Control.Concurrent (killThread)
 import qualified Control.Monad.Metrics as M
@@ -113,14 +114,9 @@ shutdownApp cfg = do
 -- | Looks up a setting in the environment, with a provided default, and
 -- 'read's that information into the inferred type.
 lookupSetting :: Read a => String -> a -> IO a
-lookupSetting env def = do
-    maybeValue <- lookupEnv env
-    case maybeValue of
-        Nothing ->
-            return def
-        Just str ->
-            maybe (handleFailedRead str) return (readMay str)
+lookupSetting env def = maybe def readSetting <$> lookupEnv env
   where
+    readSetting str = fromMaybe (handleFailedRead str) (readMay str)
     handleFailedRead str =
         error $ mconcat
             [ "Failed to read [["
