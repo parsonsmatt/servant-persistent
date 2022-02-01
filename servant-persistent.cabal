@@ -74,6 +74,8 @@ library
       , persistent-postgresql
       , persistent-template
       , safe
+      , safe-exceptions
+      , say
       , servant >= 0.13 && < 0.14
       , servant-js >= 0.9 && < 0.10
       , servant-server >= 0.13 && < 0.14
