@@ -2,5 +2,5 @@ flags: {}
 packages:
 - '.'
 extra-deps:
-- katip-0.5.4.0
-resolver: lts-11.8
+- katip-0.6.3.0
+resolver: lts-12.26
