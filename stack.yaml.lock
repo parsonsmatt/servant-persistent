@@ -5,15 +5,15 @@
 
 packages:
 - completed:
-    hackage: katip-0.5.4.0@sha256:6fd2c835e940f8d07525c62755df5814a5719c005e43bbc875ddbdae8fe6af60,4289
     pantry-tree:
+      sha256: f0fc7a19f21f364f7b3950a6450dc59c0700aa6a20a8320034f98e17df02aa30
       size: 1140
-      sha256: 6b53797d52da581ec75f3e75b5ef3f585a6018d15f92ac59fa5143af34e85c85
+    hackage: katip-0.6.3.0@sha256:26948b73c7a9815516f46287eb44835fe452854b6ffd486524e5ed5e909562bf,4272
   original:
-    hackage: katip-0.5.4.0
+    hackage: katip-0.6.3.0
 snapshots:
 - completed:
-    size: 507418
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/11/8.yaml
-    sha256: 2fc510eec19e4aecb06e5b2d7faa9a4004b55265fb5f13eb09b2be885726e810
-  original: lts-11.8
+    sha256: 95f014df58d0679b1c4a2b7bf2b652b61da8d30de5f571abb0d59015ef678646
+    size: 509471
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/12/26.yaml
+  original: lts-12.26
